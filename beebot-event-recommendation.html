@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BeeBot Event Recommendation System | Brian Chen</title>
+    <meta name="description" content="Hybrid ranking system combining semantic similarity, geo proximity, and recency decay for personalized event recommendations.">
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="project-page.css">
+</head>
+<body>
+    <nav class="project-nav">
+        <div class="container">
+            <a href="index.html" class="back-link">← Back to Portfolio</a>
+            <div class="project-badges">
+                <span class="badge">Embeddings</span>
+                <span class="badge">Geo-ranking</span>
+                <span class="badge">Recency</span>
+            </div>
+        </div>
+    </nav>
+
+    <header class="project-header">
+        <div class="container">
+            <h1>BeeBot Event Recommendation System</h1>
+            <p class="project-tagline">Personalizes nearby events using embeddings with geo and freshness signals.</p>
+            
+            <div class="project-meta">
+                <div class="meta-item">
+                    <strong>Role:</strong> Backend/iOS Intern (Contributor)
+                </div>
+                <div class="meta-item">
+                    <strong>Year:</strong> 2025
+                </div>
+                <div class="meta-item">
+                    <strong>Company:</strong> Hopscotch Labs
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main class="container project-content">
+        <section class="overview">
+            <h2>Overview</h2>
+            <p>Built a hybrid event ranking pipeline combining semantic similarity (embeddings) with geo proximity (radius prefilter + distance weighting) and recency decay. Added duplicate suppression and ingest quality gates. Result: faster queries and higher top-K precision on real user traffic.</p>
+        </section>
+
+        <section class="tech-stack">
+            <h2>Technology Stack</h2>
+            <div class="tech-grid">
+                <div class="tech-category">
+                    <h3>Backend</h3>
+                    <ul>
+                        <li>Scala</li>
+                        <li>Akka HTTP</li>
+                        <li>Akka Streams</li>
+                    </ul>
+                </div>
+                <div class="tech-category">
+                    <h3>Database</h3>
+                    <ul>
+                        <li>PostgreSQL</li>
+                        <li>pgvector</li>
+                        <li>PostGIS/geo ops</li>
+                    </ul>
+                </div>
+                <div class="tech-category">
+                    <h3>Infrastructure</h3>
+                    <ul>
+                        <li>Docker</li>
+                        <li>OpenTelemetry</li>
+                    </ul>
+                </div>
+                <div class="tech-category">
+                    <h3>Client</h3>
+                    <ul>
+                        <li>Swift (iOS integration)</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <section class="key-achievements">
+            <h2>Key Achievements</h2>
+            <div class="achievements-grid">
+                <div class="achievement-card">
+                    <div class="achievement-icon">⚡</div>
+                    <h3>Performance Optimization</h3>
+                    <p>Reduced p95 recommendation query latency through radius prefilter (ST_DWithin/bbox) + top-K embedding shortlist</p>
+                </div>
+                <div class="achievement-card">
+                    <div class="achievement-icon">🎯</div>
+                    <h3>Improved Precision</h3>
+                    <p>Enhanced Precision@10 by adding distance weighting, recency decay, and duplicate suppression</p>
+                </div>
+                <div class="achievement-card">
+                    <div class="achievement-icon">🔧</div>
+                    <h3>Robust Pipeline</h3>
+                    <p>Built scalable ingestion pipeline with backpressure & retries, reducing pipeline error rates</p>
+                </div>
+            </div>
+        </section>
+
+        <section class="architecture">
+            <h2>Architecture</h2>
+            <div class="architecture-diagram">
+                <div class="pipeline-step">
+                    <div class="step-box">Ingest</div>
+                    <div class="step-arrow">→</div>
+                </div>
+                <div class="pipeline-step">
+                    <div class="step-box">Normalize</div>
+                    <div class="step-arrow">→</div>
+                </div>
+                <div class="pipeline-step">
+                    <div class="step-box">Embed</div>
+                    <div class="step-arrow">→</div>
+                </div>
+                <div class="pipeline-step">
+                    <div class="step-box">Geo Prefilter</div>
+                    <div class="step-arrow">→</div>
+                </div>
+                <div class="pipeline-step">
+                    <div class="step-box">Semantic Shortlist</div>
+                    <div class="step-arrow">→</div>
+                </div>
+                <div class="pipeline-step">
+                    <div class="step-box">Recency Weight</div>
+                    <div class="step-arrow">→</div>
+                </div>
+                <div class="pipeline-step">
+                    <div class="step-box">Dedup</div>
+                    <div class="step-arrow">→</div>
+                </div>
+                <div class="pipeline-step">
+                    <div class="step-box">Rank</div>
+                </div>
+            </div>
+        </section>
+
+        <section class="implementation">
+            <h2>What I Built</h2>
+            <div class="implementation-grid">
+                <div class="impl-item">
+                    <h3>Pipeline Design</h3>
+                    <p>Designed candidate generation and scoring path in Akka Streams with backpressure & retries for robust event processing.</p>
+                </div>
+                <div class="impl-item">
+                    <h3>Geo & Ranking Logic</h3>
+                    <p>Implemented geo radius prefilter (ST_DWithin/Haversine) and distance/recency weighting for intelligent re-ranking.</p>
+                </div>
+                <div class="impl-item">
+                    <h3>Observability</h3>
+                    <p>Added OpenTelemetry tracing for p95 latency monitoring & error budget tracking across the recommendation pipeline.</p>
+                </div>
+                <div class="impl-item">
+                    <h3>Client Integration</h3>
+                    <p>Integrated iOS client request/response schema (Swift) for seamless mobile app event recommendation delivery.</p>
+                </div>
+            </div>
+        </section>
+
+        <section class="security">
+            <h2>Privacy & Security</h2>
+            <div class="security-features">
+                <div class="security-item">
+                    <span class="security-icon">🔒</span>
+                    <p>No user PII in ranking pipeline</p>
+                </div>
+                <div class="security-item">
+                    <span class="security-icon">🛡️</span>
+                    <p>Event payloads normalized for data consistency</p>
+                </div>
+                <div class="security-item">
+                    <span class="security-icon">👁️</span>
+                    <p>Tracing/logs redact titles after debug window</p>
+                </div>
+            </div>
+        </section>
+
+        <section class="links">
+            <h2>Resources</h2>
+            <div class="resource-links">
+                <div class="resource-item">
+                    <h4>Documentation</h4>
+                    <p>Ranking pipeline & weighting details</p>
+                    <a href="#" class="resource-link">View Write-up →</a>
+                </div>
+                <div class="resource-item">
+                    <h4>Code</h4>
+                    <p>Scoring function & geo prefilter SQL</p>
+                    <a href="#" class="resource-link">View Code →</a>
+                </div>
+                <div class="resource-item">
+                    <h4>Architecture</h4>
+                    <p>System design & pipeline diagram</p>
+                    <a href="#" class="resource-link">View Diagram →</a>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <div class="container">
+            <p>&copy; 2025 Brian Chen. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+</html>
