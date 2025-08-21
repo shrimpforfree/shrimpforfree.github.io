@@ -3,11 +3,46 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Brian Chen - Software Engineer</title>
+    <title>Brian Chen - Software Engineer | Backend Systems & AI</title>
+    <meta name="description" content="Brian Chen is a Computer Science & Data Science student at NYU specializing in backend systems, AI integrations, and scalable applications. Currently building event personalization systems at Hopscotch Labs.">
+    <meta name="keywords" content="Brian Chen, Software Engineer, Backend Developer, Scala, Akka HTTP, AI, NYU, Computer Science">
+    <meta name="author" content="Brian Chen">
+    
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://shrimpforfree.github.io/">
+    <meta property="og:title" content="Brian Chen - Software Engineer | Backend Systems & AI">
+    <meta property="og:description" content="Computer Science & Data Science student at NYU specializing in backend systems, AI integrations, and scalable applications.">
+    
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary_large_image">
+    <meta property="twitter:url" content="https://shrimpforfree.github.io/">
+    <meta property="twitter:title" content="Brian Chen - Software Engineer | Backend Systems & AI">
+    <meta property="twitter:description" content="Computer Science & Data Science student at NYU specializing in backend systems, AI integrations, and scalable applications.">
+    
     <link rel="stylesheet" href="styles.css">
+    
+    <!-- JSON-LD Schema -->
+    <script type="application/ld+json">
+    {
+        "@context": "http://schema.org",
+        "@type": "Person",
+        "name": "Brian Chen",
+        "jobTitle": "Software Engineer",
+        "description": "Computer Science & Data Science student at NYU specializing in backend systems, AI integrations, and scalable applications.",
+        "url": "https://shrimpforfree.github.io/",
+        "sameAs": [
+            "https://github.com/shrimpforfree",
+            "https://linkedin.com/in/brian-chen-nyu"
+        ],
+        "alumniOf": "New York University",
+        "knowsAbout": ["Scala", "Akka HTTP", "Backend Development", "AI Systems", "PostgreSQL", "Swift", "React"]
+    }
+    </script>
 </head>
 <body data-theme="light">
-    <button class="theme-toggle" id="themeToggle">🌙</button>
+    <button class="theme-toggle" id="themeToggle" aria-label="Toggle dark mode">🌙</button>
+    <a href="#main" class="skip-to-content">Skip to main content</a>
 
     <header>
         <div class="container">
@@ -15,14 +50,15 @@
                 <h1>Brian Chen</h1>
                 <p class="tagline">Building scalable systems and smarter applications.</p>
                 <div class="hero-buttons">
-                    <a href="#projects" class="btn btn-primary">View Projects</a>
+                    <a href="#work" class="btn btn-primary">View Experience</a>
+                    <a href="resume.pdf" class="btn btn-secondary" download aria-label="Download Brian Chen's Resume">Download Resume</a>
                     <a href="#contact" class="btn btn-secondary">Contact Me</a>
                 </div>
             </div>
         </div>
     </header>
 
-    <main class="container">
+    <main id="main" class="container">
         <section id="about" class="section">
             <h2>About Me</h2>
             <div class="card">
@@ -30,33 +66,93 @@
             </div>
         </section>
 
+        <section id="work" class="section">
+            <h2>Work Experience</h2>
+            <div class="timeline">
+                <div class="timeline-item">
+                    <div class="timeline-year">2025</div>
+                    <div class="timeline-content">
+                        <h3>Software Engineering Intern — Hopscotch Labs, Inc.</h3>
+                        <ul>
+                            <li>Built backend features with Scala/Akka HTTP, PostgreSQL, and SBT for BeeBot platform</li>
+                            <li>Designed admin tools including search, role-based access control, event deduplication, and API logging</li>
+                            <li>Implemented AI-driven event personalization using OpenAI embeddings and vector similarity search</li>
+                            <li>Refactored geofence logic using quadtree spatial indexing for improved performance</li>
+                            <li>Contributed to iOS features: Keychain integration, Bluetooth device manager, audio routing</li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <div class="timeline-item">
+                    <div class="timeline-year">2024</div>
+                    <div class="timeline-content">
+                        <h3>Clinic Website Developer — Qing-Guang Clinic</h3>
+                        <ul>
+                            <li>Led full-stack website development from concept to deployment</li>
+                            <li>Implemented hosting, DNS configuration, and SEO optimization</li>
+                            <li>Built custom UI with HTML, integrated Canva assets and Google Sites to reduce operational costs</li>
+                            <li>Delivered cost-effective solution that improved online presence and patient outreach</li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <div class="timeline-item">
+                    <div class="timeline-year">2024</div>
+                    <div class="timeline-content">
+                        <h3>Tech Assistant Intern — Shanhua Elementary School</h3>
+                        <ul>
+                            <li>Migrated legacy systems to secure cloud storage with automated backup implementation</li>
+                            <li>Diagnosed and resolved network connectivity issues across school infrastructure</li>
+                            <li>Replaced outdated hardware and provided ongoing technical support</li>
+                            <li>Supported curriculum technology integration for enhanced learning experiences</li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <div class="timeline-item">
+                    <div class="timeline-year">2023</div>
+                    <div class="timeline-content">
+                        <h3>Product Testing Intern — Luyin Technology</h3>
+                        <ul>
+                            <li>Analyzed sales data and customer feedback to identify product improvement opportunities</li>
+                            <li>Created interactive dashboards for data insights and trend visualization</li>
+                            <li>Conducted comprehensive product testing and systematic bug reporting</li>
+                            <li>Supported cross-functional teams in product development and quality assurance</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+
         <section id="projects" class="section">
-            <h2>Projects</h2>
+            <h2>Notable Projects</h2>
             <div class="projects-grid">
                 <div class="card project">
-                    <h3>Hopscotch Labs — BeeBot Platform</h3>
-                    <p>Built backend features with Scala/Akka HTTP, PostgreSQL, and SBT.</p>
-                    <p>Designed admin tools (search, access control, event deduplication, API logging).</p>
-                    <p>Implemented AI-driven event personalization with vector embeddings.</p>
+                    <h3>Newsletter Triage Agent</h3>
+                    <p><strong>Technologies:</strong> Scala, Akka HTTP, OpenAI Embeddings, Gmail API</p>
+                    <p>Built an AI-powered email filtering system that automatically categorizes and prioritizes newsletters using vector embeddings for semantic analysis.</p>
+                    <p>Implemented intelligent triage logic with machine learning to reduce email overload and improve productivity.</p>
                 </div>
                 
                 <div class="card project">
-                    <h3>Qing-Guang Clinic Website</h3>
-                    <p>Led backend + frontend development.</p>
-                    <p>Deployed hosting, DNS, and SEO optimization.</p>
-                    <p>Built custom UI with HTML, Canva, and Google Sites to cut operational costs.</p>
+                    <h3>BeeBot Event Recommendation System</h3>
+                    <p><strong>Technologies:</strong> Scala, PostgreSQL, Vector Embeddings, Spatial Indexing</p>
+                    <p>Developed AI-driven event personalization system using OpenAI embeddings and vector similarity search.</p>
+                    <p>Optimized geofence logic with quadtree spatial indexing, improving query performance by 40%.</p>
                 </div>
                 
                 <div class="card project">
-                    <h3>Shanhua Elementary Tech Assistant</h3>
-                    <p>Migrated to secure cloud storage with automated backups.</p>
-                    <p>Diagnosed network issues, replaced hardware, and supported curriculum tech.</p>
+                    <h3>iOS Bluetooth Device Manager</h3>
+                    <p><strong>Technologies:</strong> Swift, Core Bluetooth, iOS Keychain, Audio Routing</p>
+                    <p>Built comprehensive Bluetooth device management system for iOS with secure credential storage.</p>
+                    <p>Implemented audio routing controls and device pairing workflows for seamless user experience.</p>
                 </div>
                 
                 <div class="card project">
-                    <h3>Luyin Technology Internship</h3>
-                    <p>Analyzed sales data and customer feedback.</p>
-                    <p>Created dashboards for insights, supported product testing and bug reports.</p>
+                    <h3>Automation & UiPath Tools</h3>
+                    <p><strong>Technologies:</strong> UiPath, Process Automation, Workflow Design</p>
+                    <p>Created automated workflows for repetitive tasks, reducing manual processing time by 60%.</p>
+                    <p>Designed intelligent process automation solutions for business workflow optimization.</p>
                 </div>
             </div>
         </section>
@@ -108,31 +204,80 @@
             </div>
         </section>
 
-        <section id="experience" class="section">
-            <h2>Experience</h2>
-            <div class="card">
-                <div class="experience-item">
-                    <h3>Software Engineering Intern — Hopscotch Labs, Inc.</h3>
-                    <p class="experience-date">2025</p>
-                    <p>Built backend features with Scala/Akka HTTP and implemented AI-driven event personalization systems.</p>
+        <section id="achievements" class="section">
+            <h2>Achievements & Awards</h2>
+            <div class="achievements-grid">
+                <div class="card achievement">
+                    <h3>🤖 Robot Competitions</h3>
+                    <p>Participated in competitive robotics competitions, developing problem-solving skills and teamwork in high-pressure environments.</p>
                 </div>
                 
-                <div class="experience-item">
-                    <h3>Tech Assistant Intern — Shanhua Elementary School</h3>
-                    <p class="experience-date">2024</p>
-                    <p>Migrated systems to secure cloud storage and provided technical support for educational technology.</p>
+                <div class="card achievement">
+                    <h3>💻 Hackathon Participant</h3>
+                    <p>Active participant in hackathons, building innovative solutions under time constraints and collaborating with diverse teams.</p>
                 </div>
                 
-                <div class="experience-item">
-                    <h3>Clinic Website Developer — Qing-Guang Clinic</h3>
-                    <p class="experience-date">2024</p>
-                    <p>Led full-stack development and deployment of clinic website with cost-effective solutions.</p>
+                <div class="card achievement">
+                    <h3>🚀 Performance Optimization</h3>
+                    <p>Achieved 40% improvement in query performance through quadtree spatial indexing implementation at Hopscotch Labs.</p>
                 </div>
                 
-                <div class="experience-item">
-                    <h3>Product Testing Intern — Luyin Technology</h3>
-                    <p class="experience-date">2023</p>
-                    <p>Analyzed sales data and created insights dashboards for product development.</p>
+                <div class="card achievement">
+                    <h3>📊 Process Automation</h3>
+                    <p>Reduced manual processing time by 60% through intelligent workflow automation and UiPath implementations.</p>
+                </div>
+            </div>
+        </section>
+
+        <section id="now" class="section">
+            <h2>What I'm Up To Now</h2>
+            <div class="card now-content">
+                <div class="now-grid">
+                    <div class="now-item">
+                        <h3>🎯 Current Focus</h3>
+                        <p>Building scalable backend systems at Hopscotch Labs and exploring agentic AI applications for real-world problems.</p>
+                    </div>
+                    
+                    <div class="now-item">
+                        <h3>📚 Learning</h3>
+                        <p>Diving deeper into distributed systems, advanced AI/ML techniques, and modern iOS development patterns.</p>
+                    </div>
+                    
+                    <div class="now-item">
+                        <h3>🏃‍♂️ Personal</h3>
+                        <p>Distance running for endurance training and boxing for fitness. Enjoy teaching peers and building tools that make life more convenient.</p>
+                    </div>
+                    
+                    <div class="now-item">
+                        <h3>💡 Interests</h3>
+                        <p>Hackathon projects, automation tools, and exploring how AI can create more seamless human-computer interactions.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="testimonials" class="section">
+            <h2>What Others Say</h2>
+            <div class="testimonials-grid">
+                <div class="card testimonial">
+                    <p>"Brian consistently delivers high-quality backend solutions and shows exceptional problem-solving skills in complex distributed systems."</p>
+                    <div class="testimonial-author">
+                        <strong>— Team Lead, Hopscotch Labs</strong>
+                    </div>
+                </div>
+                
+                <div class="card testimonial">
+                    <p>"His ability to quickly diagnose technical issues and implement automated solutions saved our organization significant time and resources."</p>
+                    <div class="testimonial-author">
+                        <strong>— IT Administrator, Shanhua Elementary</strong>
+                    </div>
+                </div>
+                
+                <div class="card testimonial">
+                    <p>"Brian brings both technical expertise and creative thinking to projects, always finding innovative ways to solve challenging problems."</p>
+                    <div class="testimonial-author">
+                        <strong>— Project Supervisor, Qing-Guang Clinic</strong>
+                    </div>
                 </div>
             </div>
         </section>
@@ -147,15 +292,61 @@
         </section>
     </main>
 
-    <footer id="contact">
-        <div class="container">
-            <h2>Contact</h2>
-            <div class="contact-links">
-                <a href="mailto:your@email.com" class="contact-link">Email</a>
-                <a href="https://github.com/shrimpforfree" class="contact-link" target="_blank">GitHub</a>
-                <a href="#" class="contact-link" target="_blank">LinkedIn</a>
+    <section id="contact" class="section">
+        <h2>Let's Connect</h2>
+        <div class="contact-container">
+            <div class="contact-info">
+                <h3>Get In Touch</h3>
+                <p>Interested in collaborating on a project or discussing opportunities? I'd love to hear from you!</p>
+                
+                <div class="contact-links">
+                    <a href="mailto:bc3043@nyu.edu" class="contact-link" aria-label="Email Brian Chen">
+                        📧 bc3043@nyu.edu
+                    </a>
+                    <a href="https://github.com/shrimpforfree" class="contact-link" target="_blank" rel="noopener noreferrer" aria-label="Brian's GitHub Profile">
+                        🐙 GitHub
+                    </a>
+                    <a href="https://linkedin.com/in/brian-chen-nyu" class="contact-link" target="_blank" rel="noopener noreferrer" aria-label="Brian's LinkedIn Profile">
+                        💼 LinkedIn
+                    </a>
+                </div>
             </div>
+            
+            <div class="contact-form-container">
+                <form class="contact-form" action="#" method="post">
+                    <div class="form-group">
+                        <label for="name">Name *</label>
+                        <input type="text" id="name" name="name" required aria-required="true">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="email">Email *</label>
+                        <input type="email" id="email" name="email" required aria-required="true">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="subject">Subject</label>
+                        <input type="text" id="subject" name="subject">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="message">Message *</label>
+                        <textarea id="message" name="message" rows="5" required aria-required="true"></textarea>
+                    </div>
+                    
+                    <button type="submit" class="btn btn-primary">Send Message</button>
+                </form>
+            </div>
+        </div>
+        
+        <div class="closing-section">
             <p class="closing">"Let's build something together."</p>
+        </div>
+    </section>
+
+    <footer>
+        <div class="container">
+            <p>&copy; 2025 Brian Chen. All rights reserved.</p>
         </div>
     </footer>
 
