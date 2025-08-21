@@ -1,5 +1,19 @@
 /* Project Page Specific Styles */
 
+/* Reset any global link styles that might affect project titles */
+.project-header h1 {
+    text-decoration: none !important;
+}
+
+.project-header h1 a {
+    color: inherit !important;
+    text-decoration: none !important;
+}
+
+.project-header h1 a:hover {
+    color: inherit !important;
+}
+
 .project-nav {
     background: var(--card);
     padding: 15px 0;
@@ -51,6 +65,11 @@
     font-size: 3rem;
     margin-bottom: 20px;
     font-weight: 700;
+    color: white;
+}
+
+.project-header h1:hover {
+    color: white;
 }
 
 .project-tagline {
@@ -75,17 +94,22 @@
 
 .project-content {
     padding: 80px 20px;
+    max-width: 1200px;
+    margin: 0 auto;
 }
 
 .project-content section {
     margin-bottom: 80px;
+    display: block !important;
+    visibility: visible !important;
 }
 
 .project-content h2 {
     font-size: 2.2rem;
-    color: var(--accent);
+    color: var(--accent) !important;
     margin-bottom: 30px;
     text-align: center;
+    display: block !important;
 }
 
 .overview {
@@ -100,10 +124,12 @@
 }
 
 .tech-stack {
-    background: var(--card);
-    padding: 50px;
+    background: var(--card) !important;
+    padding: 50px !important;
     border-radius: 15px;
     box-shadow: 0 5px 20px var(--shadow);
+    display: block !important;
+    visibility: visible !important;
 }
 
 .tech-grid {
@@ -133,8 +159,13 @@
     border-bottom: none;
 }
 
+.key-achievements {
+    display: block !important;
+    visibility: visible !important;
+}
+
 .achievements-grid {
-    display: grid;
+    display: grid !important;
     grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
     gap: 30px;
 }
