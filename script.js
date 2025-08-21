@@ -1,22 +1,3 @@
-// Theme Toggle
-const themeToggle = document.getElementById('themeToggle');
-const body = document.body;
-
-// Load saved theme or default to light
-const savedTheme = localStorage.getItem('theme') || 'light';
-body.setAttribute('data-theme', savedTheme);
-themeToggle.textContent = savedTheme === 'light' ? '🌙' : '☀️';
-
-themeToggle.addEventListener('click', () => {
-    const currentTheme = body.getAttribute('data-theme');
-    const newTheme = currentTheme === 'light' ? 'dark' : 'light';
-    
-    body.setAttribute('data-theme', newTheme);
-    localStorage.setItem('theme', newTheme);
-    themeToggle.textContent = newTheme === 'light' ? '🌙' : '☀️';
-    themeToggle.setAttribute('aria-label', `Switch to ${currentTheme} mode`);
-});
-
 // Smooth scrolling for anchor links
 document.querySelectorAll('a[href^="#"]').forEach(anchor => {
     anchor.addEventListener('click', function (e) {
@@ -31,37 +12,56 @@ document.querySelectorAll('a[href^="#"]').forEach(anchor => {
     });
 });
 
-// Contact form handling (basic client-side validation)
-const contactForm = document.querySelector('.contact-form');
-if (contactForm) {
-    contactForm.addEventListener('submit', function(e) {
-        e.preventDefault();
-        
-        // Basic validation
-        const name = this.querySelector('#name').value.trim();
-        const email = this.querySelector('#email').value.trim();
-        const message = this.querySelector('#message').value.trim();
-        
-        if (!name || !email || !message) {
-            alert('Please fill in all required fields.');
-            return;
+
+// Project expand/collapse functionality
+function toggleProject(header) {
+    const projectItem = header.parentElement;
+    const isExpanded = projectItem.classList.contains('expanded');
+    
+    // Close all other projects
+    const allProjects = document.querySelectorAll('.project-item');
+    allProjects.forEach(item => {
+        if (item !== projectItem) {
+            item.classList.remove('expanded');
         }
-        
-        // Email validation
-        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-        if (!emailRegex.test(email)) {
-            alert('Please enter a valid email address.');
-            return;
-        }
-        
-        // In a real application, you would send this data to a server
-        alert('Thank you for your message! I\'ll get back to you soon.');
-        this.reset();
     });
+    
+    // Toggle current project
+    projectItem.classList.toggle('expanded', !isExpanded);
 }
 
-// Add loading animation for images
+// Keyboard accessibility for projects
 document.addEventListener('DOMContentLoaded', function() {
+    const projectHeaders = document.querySelectorAll('.project-header');
+    
+    projectHeaders.forEach(header => {
+        // Make headers focusable
+        header.setAttribute('tabindex', '0');
+        header.setAttribute('role', 'button');
+        header.setAttribute('aria-expanded', 'false');
+        
+        // Handle keyboard events
+        header.addEventListener('keydown', function(e) {
+            if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                toggleProject(this);
+                
+                // Update aria-expanded
+                const isExpanded = this.parentElement.classList.contains('expanded');
+                this.setAttribute('aria-expanded', isExpanded);
+            }
+        });
+        
+        // Update aria-expanded on click
+        header.addEventListener('click', function() {
+            setTimeout(() => {
+                const isExpanded = this.parentElement.classList.contains('expanded');
+                this.setAttribute('aria-expanded', isExpanded);
+            }, 10);
+        });
+    });
+
+    // Add loading animation for images
     const images = document.querySelectorAll('img');
     images.forEach(img => {
         img.addEventListener('load', function() {

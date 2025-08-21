@@ -33,15 +33,14 @@
         "url": "https://shrimpforfree.github.io/",
         "sameAs": [
             "https://github.com/shrimpforfree",
-            "https://linkedin.com/in/brian-chen-nyu"
+            "https://www.linkedin.com/in/brian-chen-07661a267/"
         ],
         "alumniOf": "New York University",
         "knowsAbout": ["Scala", "Akka HTTP", "Backend Development", "AI Systems", "PostgreSQL", "Swift", "React"]
     }
     </script>
 </head>
-<body data-theme="light">
-    <button class="theme-toggle" id="themeToggle" aria-label="Toggle dark mode">🌙</button>
+<body>
     <a href="#main" class="skip-to-content">Skip to main content</a>
 
     <header>
@@ -126,33 +125,65 @@
 
         <section id="projects" class="section">
             <h2>Notable Projects</h2>
-            <div class="projects-grid">
-                <div class="card project">
-                    <h3>Newsletter Triage Agent</h3>
-                    <p><strong>Technologies:</strong> Scala, Akka HTTP, OpenAI Embeddings, Gmail API</p>
-                    <p>Built an AI-powered email filtering system that automatically categorizes and prioritizes newsletters using vector embeddings for semantic analysis.</p>
-                    <p>Implemented intelligent triage logic with machine learning to reduce email overload and improve productivity.</p>
+            <div class="projects-list">
+                <div class="project-item">
+                    <div class="project-header" onclick="toggleProject(this)">
+                        <h3>Newsletter Triage Agent</h3>
+                        <div class="project-tech-preview">Scala, Akka HTTP, OpenAI Embeddings, Gmail API</div>
+                        <div class="expand-icon">▼</div>
+                    </div>
+                    <div class="project-content">
+                        <div class="project-details">
+                            <p><strong>Technologies:</strong> Scala, Akka HTTP, OpenAI Embeddings, Gmail API</p>
+                            <p>Built an AI-powered email filtering system that automatically categorizes and prioritizes newsletters using vector embeddings for semantic analysis.</p>
+                            <p>Implemented intelligent triage logic with machine learning to reduce email overload and improve productivity.</p>
+                        </div>
+                    </div>
                 </div>
                 
-                <div class="card project">
-                    <h3>BeeBot Event Recommendation System</h3>
-                    <p><strong>Technologies:</strong> Scala, PostgreSQL, Vector Embeddings, Spatial Indexing</p>
-                    <p>Developed AI-driven event personalization system using OpenAI embeddings and vector similarity search.</p>
-                    <p>Optimized geofence logic with quadtree spatial indexing, improving query performance by 40%.</p>
+                <div class="project-item">
+                    <div class="project-header" onclick="toggleProject(this)">
+                        <h3>BeeBot Event Recommendation System</h3>
+                        <div class="project-tech-preview">Scala, PostgreSQL, Vector Embeddings, Spatial Indexing</div>
+                        <div class="expand-icon">▼</div>
+                    </div>
+                    <div class="project-content">
+                        <div class="project-details">
+                            <p><strong>Technologies:</strong> Scala, PostgreSQL, Vector Embeddings, Spatial Indexing</p>
+                            <p>Developed AI-driven event personalization system using OpenAI embeddings and vector similarity search.</p>
+                            <p>Optimized geofence logic with quadtree spatial indexing, improving query performance by 40%.</p>
+                        </div>
+                    </div>
                 </div>
                 
-                <div class="card project">
-                    <h3>iOS Bluetooth Device Manager</h3>
-                    <p><strong>Technologies:</strong> Swift, Core Bluetooth, iOS Keychain, Audio Routing</p>
-                    <p>Built comprehensive Bluetooth device management system for iOS with secure credential storage.</p>
-                    <p>Implemented audio routing controls and device pairing workflows for seamless user experience.</p>
+                <div class="project-item">
+                    <div class="project-header" onclick="toggleProject(this)">
+                        <h3>iOS Bluetooth Device Manager</h3>
+                        <div class="project-tech-preview">Swift, Core Bluetooth, iOS Keychain, Audio Routing</div>
+                        <div class="expand-icon">▼</div>
+                    </div>
+                    <div class="project-content">
+                        <div class="project-details">
+                            <p><strong>Technologies:</strong> Swift, Core Bluetooth, iOS Keychain, Audio Routing</p>
+                            <p>Built comprehensive Bluetooth device management system for iOS with secure credential storage.</p>
+                            <p>Implemented audio routing controls and device pairing workflows for seamless user experience.</p>
+                        </div>
+                    </div>
                 </div>
                 
-                <div class="card project">
-                    <h3>Automation & UiPath Tools</h3>
-                    <p><strong>Technologies:</strong> UiPath, Process Automation, Workflow Design</p>
-                    <p>Created automated workflows for repetitive tasks, reducing manual processing time by 60%.</p>
-                    <p>Designed intelligent process automation solutions for business workflow optimization.</p>
+                <div class="project-item">
+                    <div class="project-header" onclick="toggleProject(this)">
+                        <h3>Automation & UiPath Tools</h3>
+                        <div class="project-tech-preview">UiPath, Process Automation, Workflow Design</div>
+                        <div class="expand-icon">▼</div>
+                    </div>
+                    <div class="project-content">
+                        <div class="project-details">
+                            <p><strong>Technologies:</strong> UiPath, Process Automation, Workflow Design</p>
+                            <p>Created automated workflows for repetitive tasks, reducing manual processing time by 60%.</p>
+                            <p>Designed intelligent process automation solutions for business workflow optimization.</p>
+                        </div>
+                    </div>
                 </div>
             </div>
         </section>
@@ -262,7 +293,7 @@
                 <div class="card testimonial">
                     <p>"Brian consistently delivers high-quality backend solutions and shows exceptional problem-solving skills in complex distributed systems."</p>
                     <div class="testimonial-author">
-                        <strong>— Team Lead, Hopscotch Labs</strong>
+                        <strong>— CTO, Hopscotch Labs</strong>
                     </div>
                 </div>
                 
@@ -276,7 +307,7 @@
                 <div class="card testimonial">
                     <p>"Brian brings both technical expertise and creative thinking to projects, always finding innovative ways to solve challenging problems."</p>
                     <div class="testimonial-author">
-                        <strong>— Project Supervisor, Qing-Guang Clinic</strong>
+                        <strong>— Owner, Qing-Guang Clinic</strong>
                     </div>
                 </div>
             </div>
@@ -286,7 +317,7 @@
             <h2>Education</h2>
             <div class="card">
                 <h3>New York University</h3>
-                <p><strong>B.S. Computer Science & Data Science</strong> (Expected 2026)</p>
+                <p><strong>B.S. Computer Science & Data Science</strong> (2022 - 2026)</p>
                 <p><strong>Coursework:</strong> Algorithms, Computer Systems, Statistics, Data Science, AI</p>
             </div>
         </section>
@@ -294,52 +325,21 @@
 
     <section id="contact" class="section">
         <h2>Let's Connect</h2>
-        <div class="contact-container">
-            <div class="contact-info">
-                <h3>Get In Touch</h3>
-                <p>Interested in collaborating on a project or discussing opportunities? I'd love to hear from you!</p>
-                
-                <div class="contact-links">
-                    <a href="mailto:bc3043@nyu.edu" class="contact-link" aria-label="Email Brian Chen">
-                        📧 bc3043@nyu.edu
-                    </a>
-                    <a href="https://github.com/shrimpforfree" class="contact-link" target="_blank" rel="noopener noreferrer" aria-label="Brian's GitHub Profile">
-                        🐙 GitHub
-                    </a>
-                    <a href="https://linkedin.com/in/brian-chen-nyu" class="contact-link" target="_blank" rel="noopener noreferrer" aria-label="Brian's LinkedIn Profile">
-                        💼 LinkedIn
-                    </a>
-                </div>
+        <div class="contact-simple">
+            <p>Interested in collaborating on a project or discussing opportunities? I'd love to hear from you!</p>
+            
+            <div class="contact-links">
+                <a href="mailto:brian920922@gmail.com" class="contact-link" aria-label="Email Brian Chen">
+                    📧 brian920922@gmail.com
+                </a>
+                <a href="https://github.com/shrimpforfree" class="contact-link" target="_blank" rel="noopener noreferrer" aria-label="Brian's GitHub Profile">
+                    🐙 GitHub
+                </a>
+                <a href="https://www.linkedin.com/in/brian-chen-07661a267/" class="contact-link" target="_blank" rel="noopener noreferrer" aria-label="Brian's LinkedIn Profile">
+                    💼 LinkedIn
+                </a>
             </div>
             
-            <div class="contact-form-container">
-                <form class="contact-form" action="#" method="post">
-                    <div class="form-group">
-                        <label for="name">Name *</label>
-                        <input type="text" id="name" name="name" required aria-required="true">
-                    </div>
-                    
-                    <div class="form-group">
-                        <label for="email">Email *</label>
-                        <input type="email" id="email" name="email" required aria-required="true">
-                    </div>
-                    
-                    <div class="form-group">
-                        <label for="subject">Subject</label>
-                        <input type="text" id="subject" name="subject">
-                    </div>
-                    
-                    <div class="form-group">
-                        <label for="message">Message *</label>
-                        <textarea id="message" name="message" rows="5" required aria-required="true"></textarea>
-                    </div>
-                    
-                    <button type="submit" class="btn btn-primary">Send Message</button>
-                </form>
-            </div>
-        </div>
-        
-        <div class="closing-section">
             <p class="closing">"Let's build something together."</p>
         </div>
     </section>
