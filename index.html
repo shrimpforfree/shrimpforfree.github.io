@@ -3,21 +3,21 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Brian Chen - Software Engineer | Backend Systems & AI</title>
-    <meta name="description" content="Brian Chen is a Computer Science & Data Science student at NYU specializing in backend systems, AI integrations, and scalable applications. Currently building event personalization systems at Hopscotch Labs.">
-    <meta name="keywords" content="Brian Chen, Software Engineer, Backend Developer, Scala, Akka HTTP, AI, NYU, Computer Science">
-    <meta name="author" content="Brian Chen">
+    <title>ChangYu (Brian) Chen - Software Engineer | Backend Systems & AI</title>
+    <meta name="description" content="ChangYu (Brian) Chen is a Computer Science & Data Science student at NYU specializing in backend systems, AI integrations, and scalable applications. Currently building event personalization systems at Hopscotch Labs.">
+    <meta name="keywords" content="ChangYu Chen, Brian Chen, Software Engineer, Backend Developer, Scala, Akka HTTP, AI, NYU, Computer Science">
+    <meta name="author" content="ChangYu (Brian) Chen">
     
     <!-- Open Graph / Facebook -->
     <meta property="og:type" content="website">
     <meta property="og:url" content="https://shrimpforfree.github.io/">
-    <meta property="og:title" content="Brian Chen - Software Engineer | Backend Systems & AI">
+    <meta property="og:title" content="ChangYu (Brian) Chen - Software Engineer | Backend Systems & AI">
     <meta property="og:description" content="Computer Science & Data Science student at NYU specializing in backend systems, AI integrations, and scalable applications.">
     
     <!-- Twitter -->
     <meta property="twitter:card" content="summary_large_image">
     <meta property="twitter:url" content="https://shrimpforfree.github.io/">
-    <meta property="twitter:title" content="Brian Chen - Software Engineer | Backend Systems & AI">
+    <meta property="twitter:title" content="ChangYu (Brian) Chen - Software Engineer | Backend Systems & AI">
     <meta property="twitter:description" content="Computer Science & Data Science student at NYU specializing in backend systems, AI integrations, and scalable applications.">
     
     <link rel="stylesheet" href="styles.css">
@@ -27,7 +27,7 @@
     {
         "@context": "http://schema.org",
         "@type": "Person",
-        "name": "Brian Chen",
+        "name": "ChangYu (Brian) Chen",
         "jobTitle": "Software Engineer",
         "description": "Computer Science & Data Science student at NYU specializing in backend systems, AI integrations, and scalable applications.",
         "url": "https://shrimpforfree.github.io/",
@@ -46,12 +46,10 @@
     <header>
         <div class="container">
             <div class="hero">
-                <h1>Brian Chen</h1>
-                <p class="tagline">Building scalable systems and smarter applications.</p>
+                <h1>ChangYu (Brian) Chen</h1>
+                <p class="tagline">"Love learning new coding languages and exploring how technology can solve real-world problems."</p>
                 <div class="hero-buttons">
-                    <a href="#work" class="btn btn-primary">View Experience</a>
                     <a href="resume.pdf" class="btn btn-secondary" download aria-label="Download Brian Chen's Resume">Download Resume</a>
-                    <a href="#contact" class="btn btn-secondary">Contact Me</a>
                 </div>
             </div>
         </div>
@@ -61,7 +59,7 @@
         <section id="about" class="section">
             <h2>About Me</h2>
             <div class="card">
-                <p>I'm Brian Chen, a junior majoring in Computer Science & Data Science at NYU. I'm passionate about building scalable backend systems, experimenting with agentic AI, and creating user-friendly applications. My experience spans backend engineering in Scala/Akka, iOS development in Swift, and full-stack projects. I value problem-solving, teamwork, and exploring how AI can make technology more seamless and human-centered.</p>
+                <p>I'm ChangYu (Brian) Chen, a junior majoring in Computer Science & Data Science at NYU. I'm passionate about building scalable backend systems, experimenting with agentic AI, and creating user-friendly applications. My experience spans backend engineering in Scala/Akka, iOS development in Swift, and full-stack projects. I value problem-solving, teamwork, and exploring how AI can make technology more seamless and human-centered.</p>
             </div>
         </section>
 
@@ -124,7 +122,7 @@
         </section>
 
         <section id="projects" class="section">
-            <h2>Notable Projects</h2>
+            <h2>Selected Work</h2>
             <div class="projects-list">
                 <div class="project-item">
                     <div class="project-header" onclick="toggleProject(this)">
@@ -144,16 +142,16 @@
                 <div class="project-item">
                     <div class="project-header" onclick="toggleProject(this)">
                         <h3>BeeBot Event Recommendation System</h3>
-                        <div class="project-tech-preview">Scala, PostgreSQL, Vector Embeddings, Spatial Indexing</div>
+                        <div class="project-tech-preview">Scala, Akka HTTP, PostgreSQL, OpenAI Embeddings</div>
                         <div class="expand-icon">▼</div>
                     </div>
                     <div class="project-content">
                         <div class="project-details">
-                            <p><strong>Technologies:</strong> Scala, PostgreSQL, Vector Embeddings, Spatial Indexing</p>
-                            <p>Developed AI-driven event personalization system using OpenAI embeddings and vector similarity search.</p>
-                            <p>Optimized geofence logic with quadtree spatial indexing, improving query performance by 40%.</p>
+                            <p><strong>Technologies:</strong> Scala, Akka HTTP, PostgreSQL, OpenAI Embeddings, PostGIS</p>
+                            <p>Built hybrid ranking system combining semantic similarity using OpenAI embeddings with geographical proximity and temporal recency weighting.</p>
+                            <p>Implemented PostgreSQL spatial functions for geo-radius filtering and cosine similarity for semantic event matching to generate personalized recommendation lists.</p>
                             <div class="project-link">
-                                <a href="beebot-event-recommendation.html" class="btn btn-primary">View Full Project →</a>
+                                <a href="project-event-recommendation.html" class="btn btn-primary">View Full Project →</a>
                             </div>
                         </div>
                     </div>
@@ -193,46 +191,107 @@
 
         <section id="skills" class="section">
             <h2>Skills</h2>
-            <div class="skills-grid">
-                <div class="card skill-category">
-                    <h3>Languages</h3>
-                    <div class="skill-tags">
-                        <span class="skill-tag">Scala</span>
-                        <span class="skill-tag">Swift</span>
-                        <span class="skill-tag">Java</span>
-                        <span class="skill-tag">Python</span>
-                        <span class="skill-tag">SQL</span>
+            <div class="skills-container">
+                <div class="skills-sidebar">
+                    <div class="skill-nav-item active" data-category="languages">
+                        <h3>Languages</h3>
+                    </div>
+                    <div class="skill-nav-item" data-category="frameworks">
+                        <h3>Frameworks & Tools</h3>
+                    </div>
+                    <div class="skill-nav-item" data-category="specialties">
+                        <h3>Specialties</h3>
+                    </div>
+                    <div class="skill-nav-item" data-category="databases">
+                        <h3>Databases & Storage</h3>
+                    </div>
+                    <div class="skill-nav-item" data-category="ai">
+                        <h3>AI/ML Technologies</h3>
+                    </div>
+                    <div class="skill-nav-item" data-category="tools">
+                        <h3>Developer Tools</h3>
                     </div>
                 </div>
                 
-                <div class="card skill-category">
-                    <h3>Frameworks & Tools</h3>
-                    <div class="skill-tags">
-                        <span class="skill-tag">Akka HTTP</span>
-                        <span class="skill-tag">React</span>
-                        <span class="skill-tag">UiPath</span>
-                        <span class="skill-tag">Docker</span>
-                        <span class="skill-tag">AWS</span>
+                <div class="skills-content">
+                    <div class="skill-content active" id="languages">
+                        <h3>Languages</h3>
+                        <div class="skill-tags">
+                            <span class="skill-tag">Assembly</span>
+                            <span class="skill-tag">C/C++</span>
+                            <span class="skill-tag">GDScript</span>
+                            <span class="skill-tag">Haskell</span>
+                            <span class="skill-tag">Java</span>
+                            <span class="skill-tag">JavaScript/TypeScript</span>
+                            <span class="skill-tag">Lua</span>
+                            <span class="skill-tag">Python</span>
+                            <span class="skill-tag">Scala</span>
+                            <span class="skill-tag">Scratch</span>
+                            <span class="skill-tag">SQL</span>
+                            <span class="skill-tag">Swift</span>
+                        </div>
                     </div>
-                </div>
-                
-                <div class="card skill-category">
-                    <h3>Specialties</h3>
-                    <div class="skill-tags">
-                        <span class="skill-tag">Backend Development</span>
-                        <span class="skill-tag">Event Recommendation</span>
-                        <span class="skill-tag">AI Integrations</span>
-                        <span class="skill-tag">iOS Features</span>
+                    
+                    <div class="skill-content" id="frameworks">
+                        <h3>Frameworks & Tools</h3>
+                        <div class="skill-tags">
+                            <span class="skill-tag">Akka HTTP</span>
+                            <span class="skill-tag">React</span>
+                            <span class="skill-tag">UiPath</span>
+                            <span class="skill-tag">Docker</span>
+                            <span class="skill-tag">AWS</span>
+                            <span class="skill-tag">Postman</span>
+                            <span class="skill-tag">Beekeeper Studio</span>
+                        </div>
                     </div>
-                </div>
-                
-                <div class="card skill-category">
-                    <h3>Developer Tools</h3>
-                    <div class="skill-tags">
-                        <span class="skill-tag">Git</span>
-                        <span class="skill-tag">Neovim</span>
-                        <span class="skill-tag">VS Code</span>
-                        <span class="skill-tag">PostgreSQL</span>
+                    
+                    <div class="skill-content" id="specialties">
+                        <h3>Specialties</h3>
+                        <div class="skill-tags">
+                            <span class="skill-tag">Event Recommendations</span>
+                            <span class="skill-tag">Vector Search & Embeddings</span>
+                            <span class="skill-tag">Geospatial Ranking (PostGIS/Haversine)</span>
+                            <span class="skill-tag">Data Deduplication & Quality</span>
+                            <span class="skill-tag">API Design & Performance (Akka HTTP)</span>
+                            <span class="skill-tag">Streaming Pipelines (Akka Streams)</span>
+                            <span class="skill-tag">Observability & Tracing</span>
+                            <span class="skill-tag">Authentication & Keychain (iOS)</span>
+                            <span class="skill-tag">RBAC & Access Control</span>
+                            <span class="skill-tag">LLM Cost Optimization</span>
+                        </div>
+                    </div>
+                    
+                    <div class="skill-content" id="databases">
+                        <h3>Databases & Storage</h3>
+                        <div class="skill-tags">
+                            <span class="skill-tag">PostgreSQL</span>
+                            <span class="skill-tag">PostGIS</span>
+                            <span class="skill-tag">Firebase</span>
+                            <span class="skill-tag">Heroku</span>
+                            <span class="skill-tag">Cloud Storage</span>
+                            <span class="skill-tag">RAID Systems</span>
+                        </div>
+                    </div>
+                    
+                    <div class="skill-content" id="ai">
+                        <h3>AI/ML Technologies</h3>
+                        <div class="skill-tags">
+                            <span class="skill-tag">OpenAI API</span>
+                            <span class="skill-tag">Prompt Engineering</span>
+                            <span class="skill-tag">Vector Search</span>
+                            <span class="skill-tag">Cosine Similarity</span>
+                            <span class="skill-tag">Semantic Search</span>
+                        </div>
+                    </div>
+                    
+                    <div class="skill-content" id="tools">
+                        <h3>Developer Tools</h3>
+                        <div class="skill-tags">
+                            <span class="skill-tag">Git</span>
+                            <span class="skill-tag">Neovim ❤️</span>
+                            <span class="skill-tag">VS Code</span>
+                            <span class="skill-tag">SBT</span>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -242,49 +301,44 @@
             <h2>Achievements & Awards</h2>
             <div class="achievements-grid">
                 <div class="card achievement">
-                    <h3>🤖 Robot Competitions</h3>
-                    <p>Participated in competitive robotics competitions, developing problem-solving skills and teamwork in high-pressure environments.</p>
+                    <h3>🏆 National Game Design Competition</h3>
+                    <p>2nd place in Taiwan's national game design competition for developing a 2D scroller game using Scratch programming platform.</p>
+                </div>
+                
+                <div class="card achievement">
+                    <h3>🤖 EV3 Robot Competitions</h3>
+                    <p>Competed in robotics competitions using LEGO EV3 systems for racing cars, ball sorting mechanisms, and maze-solving algorithms. Developed autonomous navigation and sensor-based decision making under competitive time constraints.</p>
                 </div>
                 
                 <div class="card achievement">
                     <h3>💻 Hackathon Participant</h3>
                     <p>Active participant in hackathons, building innovative solutions under time constraints and collaborating with diverse teams.</p>
                 </div>
-                
-                <div class="card achievement">
-                    <h3>🚀 Performance Optimization</h3>
-                    <p>Achieved 40% improvement in query performance through quadtree spatial indexing implementation at Hopscotch Labs.</p>
-                </div>
-                
-                <div class="card achievement">
-                    <h3>📊 Process Automation</h3>
-                    <p>Reduced manual processing time by 60% through intelligent workflow automation and UiPath implementations.</p>
-                </div>
             </div>
         </section>
 
         <section id="now" class="section">
-            <h2>What I'm Up To Now</h2>
+            <h2>What Drives Me</h2>
             <div class="card now-content">
                 <div class="now-grid">
                     <div class="now-item">
                         <h3>🎯 Current Focus</h3>
-                        <p>Building scalable backend systems at Hopscotch Labs and exploring agentic AI applications for real-world problems.</p>
+                        <p>Building scalable backend systems at Hopscotch Labs using Scala/Akka and exploring agentic AI applications for real-world problems. Actively working with UiPath for process automation and Akka actor systems for distributed agentic AI architectures.</p>
                     </div>
                     
                     <div class="now-item">
-                        <h3>📚 Learning</h3>
-                        <p>Diving deeper into distributed systems, advanced AI/ML techniques, and modern iOS development patterns.</p>
+                        <h3>🏃‍♂️ Athletic Achievements</h3>
+                        <p>Passionate distance runner with countless gold medals in competitions. Also enjoy boxing and golfing as complementary sports for fitness and focus.</p>
                     </div>
                     
                     <div class="now-item">
-                        <h3>🏃‍♂️ Personal</h3>
-                        <p>Distance running for endurance training and boxing for fitness. Enjoy teaching peers and building tools that make life more convenient.</p>
+                        <h3>💻 Programming Languages</h3>
+                        <p>Love learning new coding languages. Currently proficient in: Scala, Java, Python, JavaScript/TypeScript, Swift, C, C++, Assembly, Haskell, Lua, Scratch, and Godot scripting.</p>
                     </div>
                     
                     <div class="now-item">
-                        <h3>💡 Interests</h3>
-                        <p>Hackathon projects, automation tools, and exploring how AI can create more seamless human-computer interactions.</p>
+                        <h3>📚 Continuous Learning</h3>
+                        <p>Diving deeper into distributed systems, advanced AI/ML techniques, and exploring how AI can create more seamless human-computer interactions.</p>
                     </div>
                 </div>
             </div>
@@ -292,25 +346,91 @@
 
         <section id="testimonials" class="section">
             <h2>What Others Say</h2>
-            <div class="testimonials-grid">
-                <div class="card testimonial">
-                    <p>"Brian consistently delivers high-quality backend solutions and shows exceptional problem-solving skills in complex distributed systems."</p>
-                    <div class="testimonial-author">
-                        <strong>— CTO, Hopscotch Labs</strong>
+            <div class="testimonials-container">
+                <div class="testimonials-scroller">
+                    <div class="card testimonial">
+                        <p>"Fast learner who dove right in and started contributing immediately. Built many creative new features with remarkably few mistakes."</p>
+                        <div class="testimonial-author">
+                            <strong>— CTO, Hopscotch Labs</strong>
+                        </div>
                     </div>
-                </div>
-                
-                <div class="card testimonial">
-                    <p>"His ability to quickly diagnose technical issues and implement automated solutions saved our organization significant time and resources."</p>
-                    <div class="testimonial-author">
-                        <strong>— IT Administrator, Shanhua Elementary</strong>
+                    
+                    <div class="card testimonial">
+                        <p>"Quickly diagnosed our network issues and helped us implement secure data storage solutions."</p>
+                        <div class="testimonial-author">
+                            <strong>— IT Administrator, Shanhua Elementary</strong>
+                        </div>
                     </div>
-                </div>
-                
-                <div class="card testimonial">
-                    <p>"Brian brings both technical expertise and creative thinking to projects, always finding innovative ways to solve challenging problems."</p>
-                    <div class="testimonial-author">
-                        <strong>— Owner, Qing-Guang Clinic</strong>
+                    
+                    <div class="card testimonial">
+                        <p>"Delivered an excellent website that significantly improved our online presence while keeping costs much lower than expected."</p>
+                        <div class="testimonial-author">
+                            <strong>— Owner, Qing-Guang Clinic</strong>
+                        </div>
+                    </div>
+                    
+                    <div class="card testimonial">
+                        <p>"This kid was born running. Hit the ground coding from day one and never looked back."</p>
+                        <div class="testimonial-author">
+                            <strong>— Senior Developer, Hopscotch Labs</strong>
+                        </div>
+                    </div>
+                    
+                    <div class="card testimonial">
+                        <p>"Always analyzes first and lays out thorough research before coding. That's why his code is always clean and well-structured."</p>
+                        <div class="testimonial-author">
+                            <strong>— Project Manager</strong>
+                        </div>
+                    </div>
+                    
+                    <div class="card testimonial">
+                        <p>"Impressive ability to learn new technologies quickly and apply them effectively in real-world projects."</p>
+                        <div class="testimonial-author">
+                            <strong>— CTO, Hopscotch Labs</strong>
+                        </div>
+                    </div>
+                    
+                    <!-- Complete set of duplicates for seamless loop -->
+                    <div class="card testimonial">
+                        <p>"Fast learner who dove right in and started contributing immediately. Built many creative new features with remarkably few mistakes."</p>
+                        <div class="testimonial-author">
+                            <strong>— CTO, Hopscotch Labs</strong>
+                        </div>
+                    </div>
+                    
+                    <div class="card testimonial">
+                        <p>"Quickly diagnosed our network issues and helped us implement secure data storage solutions."</p>
+                        <div class="testimonial-author">
+                            <strong>— IT Administrator, Shanhua Elementary</strong>
+                        </div>
+                    </div>
+                    
+                    <div class="card testimonial">
+                        <p>"Delivered an excellent website that significantly improved our online presence while keeping costs much lower than expected."</p>
+                        <div class="testimonial-author">
+                            <strong>— Owner, Qing-Guang Clinic</strong>
+                        </div>
+                    </div>
+                    
+                    <div class="card testimonial">
+                        <p>"This kid was born running. Hit the ground coding from day one and never looked back."</p>
+                        <div class="testimonial-author">
+                            <strong>— Senior Developer, Hopscotch Labs</strong>
+                        </div>
+                    </div>
+                    
+                    <div class="card testimonial">
+                        <p>"Always analyzes first and lays out thorough research before coding. That's why his code is always clean and well-structured."</p>
+                        <div class="testimonial-author">
+                            <strong>— Project Manager</strong>
+                        </div>
+                    </div>
+                    
+                    <div class="card testimonial">
+                        <p>"Impressive ability to learn new technologies quickly and apply them effectively in real-world projects."</p>
+                        <div class="testimonial-author">
+                            <strong>— CTO, Hopscotch Labs</strong>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -326,33 +446,16 @@
         </section>
     </main>
 
-    <section id="contact" class="section">
-        <h2>Let's Connect</h2>
-        <div class="contact-simple">
-            <p>Interested in collaborating on a project or discussing opportunities? I'd love to hear from you!</p>
-            
-            <div class="contact-links">
-                <a href="mailto:brian920922@gmail.com" class="contact-link" aria-label="Email Brian Chen">
-                    📧 brian920922@gmail.com
-                </a>
-                <a href="https://github.com/shrimpforfree" class="contact-link" target="_blank" rel="noopener noreferrer" aria-label="Brian's GitHub Profile">
-                    🐙 GitHub
-                </a>
-                <a href="https://www.linkedin.com/in/brian-chen-07661a267/" class="contact-link" target="_blank" rel="noopener noreferrer" aria-label="Brian's LinkedIn Profile">
-                    💼 LinkedIn
-                </a>
-            </div>
-            
-            <p class="closing">"Let's build something together."</p>
-        </div>
-    </section>
-
-    <footer>
-        <div class="container">
-            <p>&copy; 2025 Brian Chen. All rights reserved.</p>
-        </div>
-    </footer>
-
+    <script src="navigation-bar.js"></script>
+    <script src="contact-banner.js"></script>
     <script src="script.js"></script>
+    <script>
+        // Initialize navigation for main portfolio page
+        NavigationBar.create({
+            backText: 'Brian Chen - Portfolio',
+            isHomePage: true,
+            showBadges: false
+        });
+    </script>
 </body>
 </html>

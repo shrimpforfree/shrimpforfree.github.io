@@ -105,6 +105,12 @@ header {
 
 .section {
     margin-bottom: 80px;
+    padding-bottom: 40px;
+    border-bottom: 1px solid var(--border);
+}
+
+.section:last-child {
+    border-bottom: none;
 }
 
 .section h2 {
@@ -136,7 +142,7 @@ header {
 
 /* Projects List Styles */
 .projects-list {
-    max-width: 800px;
+    max-width: 1000px;
     margin: 0 auto;
 }
 
@@ -153,7 +159,7 @@ header {
     box-shadow: 0 5px 20px var(--shadow);
 }
 
-.project-header {
+.projects-list .project-header {
     padding: 20px 25px;
     cursor: pointer;
     display: flex;
@@ -163,11 +169,11 @@ header {
     user-select: none;
 }
 
-.project-header:hover {
-    background: rgba(45, 90, 61, 0.05);
-}
+/* .project-header:hover { */
+/*     background: rgba(45, 90, 61, 0.05); */
+/* } */
 
-.project-header h3 {
+.projects-list .project-header h3 {
     color: var(--accent);
     margin: 0;
     font-size: 1.3rem;
@@ -194,36 +200,108 @@ header {
     transform: rotate(180deg);
 }
 
-.project-content {
+.projects-list .project-content {
     max-height: 0;
     overflow: hidden;
     transition: max-height 0.4s ease, padding 0.4s ease;
     background: rgba(45, 90, 61, 0.02);
 }
 
-.project-item.expanded .project-content {
+.projects-list .project-item.expanded .project-content {
     max-height: 500px;
     padding: 0 25px 25px;
 }
 
-.project-details p {
+.projects-list .project-details p {
     margin-bottom: 12px;
     line-height: 1.6;
 }
 
-.project-details p:first-child {
+.projects-list .project-details p:first-child {
     margin-top: 15px;
 }
 
-.project-link {
+.projects-list .project-link {
     margin-top: 20px;
     text-align: center;
 }
 
-.skills-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-    gap: 20px;
+/* Skills Container */
+.skills-container {
+    display: flex;
+    gap: 30px;
+    max-width: 1000px;
+    margin: 0 auto;
+}
+
+/* Skills Sidebar */
+.skills-sidebar {
+    width: 250px;
+    flex-shrink: 0;
+}
+
+.skill-nav-item {
+    background: var(--card);
+    border-radius: 8px;
+    box-shadow: 0 2px 8px var(--shadow);
+    margin-bottom: 10px;
+    padding: 15px 20px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    border-left: 4px solid transparent;
+}
+
+.skill-nav-item:hover {
+    background: var(--bg);
+    transform: translateX(5px);
+    box-shadow: 0 4px 15px var(--shadow);
+}
+
+.skill-nav-item.active {
+    background: var(--bg);
+    border-left-color: var(--accent);
+    box-shadow: 0 4px 15px var(--shadow);
+}
+
+.skill-nav-item h3 {
+    margin: 0;
+    font-size: 1rem;
+    color: var(--accent);
+    font-weight: 600;
+}
+
+/* Skills Content */
+.skills-content {
+    flex: 1;
+    background: var(--card);
+    border-radius: 10px;
+    box-shadow: 0 3px 15px var(--shadow);
+    min-height: 300px;
+    position: relative;
+    overflow: hidden;
+}
+
+.skill-content {
+    opacity: 0;
+    transform: translateY(-20px);
+    transition: opacity 0.4s ease, transform 0.4s ease;
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    padding: 30px;
+}
+
+.skill-content.active {
+    opacity: 1;
+    transform: translateY(0);
+    position: relative;
+}
+
+.skill-content h3 {
+    color: var(--accent);
+    margin-bottom: 20px;
+    font-size: 1.5rem;
 }
 
 .skill-category h3 {
@@ -409,16 +487,37 @@ footer {
 }
 
 /* Testimonials */
-.testimonials-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-    gap: 30px;
+/* Testimonials Scroller */
+.testimonials-container {
+    overflow: hidden;
+    position: relative;
 }
+
+.testimonials-scroller {
+    display: flex;
+    gap: 30px;
+    animation: scroll-left 30s linear infinite;
+    width: fit-content;
+}
+
+@keyframes scroll-left {
+    0% {
+        transform: translateX(0);
+    }
+    100% {
+        transform: translateX(-50%);
+    }
+}
+
+/* Removed hover pause to prevent speed-up snap behavior */
 
 .testimonial {
     font-style: italic;
     position: relative;
+    width: 300px;
+    flex-shrink: 0;
     padding: 35px 25px 25px;
+    white-space: normal;
 }
 
 .testimonial::before {
@@ -436,66 +535,6 @@ footer {
     color: var(--accent);
 }
 
-/* Contact Section */
-.contact-simple {
-    text-align: center;
-    max-width: 600px;
-    margin: 0 auto;
-}
-
-.contact-simple p {
-    margin-bottom: 30px;
-    font-size: 1.1rem;
-}
-
-.contact-links {
-    display: flex;
-    justify-content: center;
-    gap: 30px;
-    margin: 40px 0;
-    flex-wrap: wrap;
-}
-
-.contact-link {
-    color: var(--accent);
-    text-decoration: none;
-    font-weight: 600;
-    font-size: 1.1rem;
-    transition: transform 0.2s, color 0.2s;
-    display: inline-block;
-    padding: 10px 20px;
-    border-radius: 8px;
-    background: var(--card);
-    box-shadow: 0 3px 10px var(--shadow);
-}
-
-.contact-link:hover {
-    transform: translateY(-2px);
-    color: var(--accent-hover);
-    box-shadow: 0 5px 20px var(--shadow);
-}
-
-.closing {
-    font-style: italic;
-    color: var(--accent);
-    font-size: 1.2rem;
-    margin: 0;
-}
-
-/* Footer */
-footer {
-    background: var(--card);
-    text-align: center;
-    padding: 30px 0;
-    margin-top: 0;
-    border-top: 1px solid var(--border);
-}
-
-footer p {
-    margin: 0;
-    color: var(--text);
-    opacity: 0.8;
-}
 
 @media (max-width: 768px) {
     .hero h1 {
@@ -517,7 +556,7 @@ footer p {
         grid-template-columns: 1fr;
     }
     
-    .project-header {
+    .projects-list .project-header {
         flex-direction: column;
         align-items: flex-start;
         gap: 10px;
@@ -534,18 +573,32 @@ footer p {
         right: 25px;
     }
     
-    .skills-grid {
-        grid-template-columns: 1fr;
+    .skills-container {
+        flex-direction: column;
+    }
+    
+    .skills-sidebar {
+        width: 100%;
+        display: flex;
+        overflow-x: auto;
+        gap: 10px;
+        margin-bottom: 20px;
+    }
+    
+    .skill-nav-item {
+        flex-shrink: 0;
+        min-width: 150px;
+        text-align: center;
+    }
+    
+    .skill-nav-item:hover {
+        transform: none;
     }
     
     .now-grid {
         grid-template-columns: 1fr;
     }
     
-    .contact-links {
-        flex-direction: column;
-        align-items: center;
-    }
     
     .timeline {
         padding-left: 20px;

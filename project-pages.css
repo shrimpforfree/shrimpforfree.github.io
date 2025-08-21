@@ -1,6 +1,43 @@
-/* Project Page Specific Styles */
+/* Project Page Specific Styles - Self-contained */
 
-/* Reset any global link styles that might affect project titles */
+/* CSS Variables */
+:root {
+    --bg: #fefefe;
+    --text: #2d3748;
+    --accent: #2d5a3d;
+    --accent-hover: #1e3a28;
+    --card: #f7fafc;
+    --shadow: rgba(0, 0, 0, 0.08);
+    --border: #e2e8f0;
+}
+
+/* Reset and base styles */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    line-height: 1.6;
+    color: var(--text);
+    background-color: var(--bg);
+}
+
+/* Container */
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 20px;
+}
+
+/* Reset any potential conflicts with portfolio page styles */
+.project-header {
+    /* Override any inherited styles */
+    cursor: default !important;
+}
+
 .project-header h1 {
     text-decoration: none !important;
 }
@@ -10,49 +47,17 @@
     text-decoration: none !important;
 }
 
-.project-header h1 a:hover {
-    color: inherit !important;
+.project-content {
+    /* Ensure content is always visible */
+    display: block !important;
+    visibility: visible !important;
 }
 
-.project-nav {
-    background: var(--card);
-    padding: 15px 0;
-    border-bottom: 1px solid var(--border);
-    position: sticky;
-    top: 0;
-    z-index: 100;
+.project-content section {
+    display: block !important;
+    visibility: visible !important;
 }
 
-.project-nav .container {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
-
-.back-link {
-    color: var(--accent);
-    text-decoration: none;
-    font-weight: 600;
-    transition: color 0.2s;
-}
-
-.back-link:hover {
-    color: var(--accent-hover);
-}
-
-.project-badges {
-    display: flex;
-    gap: 10px;
-}
-
-.badge {
-    background: var(--accent);
-    color: white;
-    padding: 4px 12px;
-    border-radius: 15px;
-    font-size: 0.8rem;
-    font-weight: 500;
-}
 
 .project-header {
     background: linear-gradient(135deg, var(--accent), var(--accent-hover));
@@ -65,10 +70,6 @@
     font-size: 3rem;
     margin-bottom: 20px;
     font-weight: 700;
-    color: white;
-}
-
-.project-header h1:hover {
     color: white;
 }
 
@@ -124,8 +125,8 @@
 }
 
 .tech-stack {
-    background: var(--card) !important;
-    padding: 50px !important;
+    background: var(--card);
+    padding: 50px;
     border-radius: 15px;
     box-shadow: 0 5px 20px var(--shadow);
     display: block !important;
@@ -165,7 +166,7 @@
 }
 
 .achievements-grid {
-    display: grid !important;
+    display: grid;
     grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
     gap: 30px;
 }
@@ -366,7 +367,77 @@
         grid-template-columns: 1fr;
     }
     
-    .resource-links {
-        grid-template-columns: 1fr;
+    .processing-features {
+        flex-direction: column;
+        align-items: center;
     }
+}
+
+/* Data Processing */
+.processing-features {
+    display: flex;
+    justify-content: center;
+    gap: 40px;
+    flex-wrap: wrap;
+    margin-top: 30px;
+}
+
+.processing-item {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    background: var(--card);
+    padding: 20px 30px;
+    border-radius: 10px;
+    box-shadow: 0 3px 10px var(--shadow);
+}
+
+.processing-icon {
+    font-size: 1.5rem;
+}
+
+.processing-item p {
+    margin: 0;
+    font-weight: 500;
+}
+
+/* Architecture Enhancements */
+.architecture-caption {
+    text-align: center;
+    font-style: italic;
+    color: var(--text);
+    opacity: 0.8;
+    margin-bottom: 30px;
+    font-size: 0.95rem;
+}
+
+.scoring-formula {
+    margin-top: 40px;
+    background: rgba(45, 90, 61, 0.05);
+    padding: 25px;
+    border-radius: 10px;
+    border-left: 4px solid var(--accent);
+}
+
+.scoring-formula h3 {
+    color: var(--accent);
+    margin-bottom: 15px;
+    font-size: 1.1rem;
+}
+
+.scoring-formula code {
+    background: rgba(45, 90, 61, 0.1);
+    padding: 8px 12px;
+    border-radius: 6px;
+    font-family: 'Monaco', 'Consolas', monospace;
+    font-size: 0.9rem;
+    display: inline-block;
+    margin-bottom: 8px;
+}
+
+.formula-note {
+    font-size: 0.85rem;
+    opacity: 0.8;
+    margin: 0;
+    font-style: italic;
 }

@@ -68,4 +68,24 @@ document.addEventListener('DOMContentLoaded', function() {
             this.style.opacity = '1';
         });
     });
+
+    // Skills navigation functionality
+    const skillNavItems = document.querySelectorAll('.skill-nav-item');
+    const skillContents = document.querySelectorAll('.skill-content');
+
+    skillNavItems.forEach(navItem => {
+        navItem.addEventListener('click', function() {
+            const category = this.getAttribute('data-category');
+            
+            // Remove active class from all nav items and contents
+            skillNavItems.forEach(item => item.classList.remove('active'));
+            skillContents.forEach(content => content.classList.remove('active'));
+            
+            // Add active class to clicked nav item and corresponding content
+            this.classList.add('active');
+            document.getElementById(category).classList.add('active');
+        });
+    });
+
+    // Testimonials scroll is handled by CSS animation with manual HTML duplication
 });
