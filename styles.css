@@ -203,13 +203,16 @@ header {
 .projects-list .project-content {
     max-height: 0;
     overflow: hidden;
-    transition: max-height 0.4s ease, padding 0.4s ease;
+    transition: max-height 0.4s ease;
     background: rgba(45, 90, 61, 0.02);
 }
 
 .projects-list .project-item.expanded .project-content {
     max-height: 500px;
-    padding: 0 25px 25px;
+}
+
+.projects-list .project-details {
+    padding: 25px;
 }
 
 .projects-list .project-details p {
