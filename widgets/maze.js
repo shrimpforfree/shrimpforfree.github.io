@@ -98,9 +98,13 @@ export function maze({ side = 'left', top = 720 } = {}) {
   function startBFS() {
     const start = { x: 0, y: 0 };
     const end   = { x: COLS - 1, y: ROWS - 1 };
+    // dist holds the BFS depth of every reached cell. We render the
+    // maze as a gradient over these distances so the frontier looks
+    // like a propagating wave instead of a flat tint.
     bfsState = {
       queue:   [start],
-      visited: new Set([key(start)]),
+      dist:    new Map([[key(start), 0]]),
+      maxDist: 0,
       parent:  new Map(),
       end,
       done:    false,
@@ -138,10 +142,13 @@ export function maze({ side = 'left', top = 720 } = {}) {
         bfsState.done = true;
         break;
       }
+      const d = bfsState.dist.get(key(cell));
       for (const n of neighbors(cell)) {
-        if (!bfsState.visited.has(key(n))) {
-          bfsState.visited.add(key(n));
-          bfsState.parent.set(key(n), cell);
+        const nk = key(n);
+        if (!bfsState.dist.has(nk)) {
+          bfsState.dist.set(nk, d + 1);
+          if (d + 1 > bfsState.maxDist) bfsState.maxDist = d + 1;
+          bfsState.parent.set(nk, cell);
           bfsState.queue.push(n);
         }
       }
@@ -157,14 +164,41 @@ export function maze({ side = 'left', top = 720 } = {}) {
   }
 
   // ---- drawing ----
+
+  // BFS-distance gradient: cool & light at the start, cool & deep
+  // mid-range, warm at the deepest cells. Reads as a heat wave moving
+  // outward from the source.
+  const C_NEAR = [120, 170, 200];   // light steel
+  const C_MID  = [ 47, 106, 160];   // accent steel blue
+  const C_FAR  = [194,  83,  43];   // rust
+  const lerp = (a, b, t) => a + (b - a) * t;
+  function distColor(t) {
+    let r, g, b, a;
+    if (t < 0.5) {
+      const u = t * 2;
+      r = lerp(C_NEAR[0], C_MID[0], u);
+      g = lerp(C_NEAR[1], C_MID[1], u);
+      b = lerp(C_NEAR[2], C_MID[2], u);
+      a = lerp(0.18, 0.55, u);
+    } else {
+      const u = (t - 0.5) * 2;
+      r = lerp(C_MID[0], C_FAR[0], u);
+      g = lerp(C_MID[1], C_FAR[1], u);
+      b = lerp(C_MID[2], C_FAR[2], u);
+      a = 0.55;
+    }
+    return `rgba(${r|0}, ${g|0}, ${b|0}, ${a})`;
+  }
+
   function draw() {
     ctx.clearRect(0, 0, W, H);
 
-    // Visited tint.
-    if (bfsState) {
-      ctx.fillStyle = 'rgba(47, 106, 160, 0.16)';
-      for (const k of bfsState.visited) {
+    // Distance gradient — every reached cell tinted by its BFS depth.
+    if (bfsState && bfsState.dist.size) {
+      const max = Math.max(1, bfsState.maxDist);
+      for (const [k, d] of bfsState.dist) {
         const x = k % COLS, y = (k - x) / COLS;
+        ctx.fillStyle = distColor(d / max);
         ctx.fillRect(x * CELL, y * CELL, CELL, CELL);
       }
     }
@@ -185,10 +219,11 @@ export function maze({ side = 'left', top = 720 } = {}) {
     }
     ctx.stroke();
 
-    // Final path.
+    // Final path — draw with a paper halo behind it so it pops over
+    // whatever gradient color happens to live underneath.
     if (bfsState && bfsState.path) {
-      ctx.strokeStyle = 'rgba(47, 106, 160, 0.95)';
-      ctx.lineWidth = 2;
+      ctx.lineCap = 'round';
+      ctx.lineJoin = 'round';
       ctx.beginPath();
       for (let i = 0; i < bfsState.path.length; i++) {
         const p = bfsState.path[i];
@@ -196,11 +231,16 @@ export function maze({ side = 'left', top = 720 } = {}) {
         const y = p.y * CELL + CELL / 2;
         if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
       }
+      ctx.strokeStyle = 'rgba(243, 239, 230, 0.85)';
+      ctx.lineWidth = 4;
+      ctx.stroke();
+      ctx.strokeStyle = 'rgba(28, 31, 36, 0.85)';
+      ctx.lineWidth = 1.6;
       ctx.stroke();
     }
 
     if (bfsState) {
-      const visited = bfsState.visited.size;
+      const visited = bfsState.dist.size;
       statsEl.textContent = bfsState.path
         ? `visited ${visited} · path ${bfsState.path.length}`
         : `visited ${visited}`;
