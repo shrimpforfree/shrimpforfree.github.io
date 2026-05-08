@@ -1,10 +1,12 @@
 // widgets/hashring.js
 //
-// Consistent hashing on a ring. Nodes are placed at random positions
-// on a circle (their "hash"), and each key is owned by the FIRST
-// node clockwise from the key's position. The colored segments show
-// which node owns which arc; the small dots inside the ring are
-// keys, colored by their current owner.
+// Consistent hashing on a ring — production-grade variant with
+// VIRTUAL NODES. Each physical server hashes to several positions on
+// the ring (vnodes), all in the same colour; ownership of an arc
+// goes to the first vnode clockwise from the key. The original
+// "naïve" version (one ring position per server) suffered from
+// uneven load — random angles cluster — so every real system
+// (Cassandra, DynamoDB, Riak, etc.) uses vnodes for better balance.
 //
 // Why this matters:
 //   - Naïve sharding hashes a key with `key % N` and routes it to
@@ -12,14 +14,13 @@
 //   - Consistent hashing places nodes on a 1D ring. When a node
 //     joins or leaves, only keys in that slice of the ring move —
 //     about K/N of them, not all K.
-//   - That's why every CDN, DynamoDB, Cassandra, memcached client,
-//     and load balancer that wants graceful scale-out uses some
-//     variation of this idea. (Production systems also use *virtual
-//     nodes* — each physical node hashes to many ring positions —
-//     for better balance. Skipped here for clarity.)
+//   - Virtual nodes give each physical server multiple ring slots,
+//     so the random-cluster variance averages out and each server
+//     ends up with a roughly equal share of keys. Same migration
+//     guarantee, much smoother load.
 //
-// The educational payoff is the *migration*: after a node joins or
-// leaves we snapshot which keys changed owner, then animate just
+// The educational payoff is the *migration*: after a server joins
+// or leaves we snapshot which keys changed owner, then animate just
 // those keys (pulsing halo + colour crossfade) so you can literally
 // see "only K/N keys moved" instead of having to take it on faith.
 
@@ -28,14 +29,14 @@ import { mount, place, onResize, visibility, reducedMotion, responsiveWidth }
 
 const MIN_W      = 360;
 const MAX_W      = 520;
-const MIN_NODES  = 3;
-const MAX_NODES  = 7;
-const N_KEYS     = 32;
-const TICK_MS    = 1400;     // a touch slower so the migration animation can finish
+const MIN_PHYS   = 3;        // physical nodes (servers)
+const MAX_PHYS   = 6;
+const VNODES_PER = 4;        // ring positions per physical node
+const N_KEYS     = 48;
+const TICK_MS    = 1500;
 const MIGRATE_MS = 900;      // duration of the per-key migration animation
 
 // Muted palette — distinct enough to read, calm enough to fit the page.
-// Stored as RGB triples so we can lerp between them during migration.
 const PALETTE_RGB = [
   [ 76, 121, 166],   // steel blue
   [188,  98,  68],   // rust
@@ -52,13 +53,14 @@ const lerpRgb = (a, b, t, alpha = 1) =>
 
 export function hashring({ side = 'right', top = 1820 } = {}) {
   let W = MIN_W, H = MIN_W;
-  let nodes = [];           // sorted by angle: [{ id, angle, color }]
-  let keys = [];            // [{ angle, ownerId, prevColor, migrateAt }]
-  let phase = 'grow';       // 'grow' | 'shrink'
-  let highlight = null;
-  let nextId = 1;
+  // Each entry is one VIRTUAL node: { pid, angle, color }. Sorted by
+  // angle so owner-lookup is a single linear scan.
+  let vnodes = [];
+  let keys = [];            // [{ angle, ownerPid, prevColor, migrateAt }]
+  let phase = 'grow';
+  let highlightPid = null;
+  let nextPid = 1;
   let lastOp = '';
-  let migrating = 0;        // count of keys currently in a migration animation
   let nextTickAt = 0;
   let rafId = null;
 
@@ -67,7 +69,7 @@ export function hashring({ side = 'right', top = 1820 } = {}) {
 
   const { wrap } = mount({
     content: canvas,
-    label: '// consistent hashing · auto-cycling',
+    label: '// consistent hashing · virtual nodes',
   });
 
   function relayout() {
@@ -84,67 +86,92 @@ export function hashring({ side = 'right', top = 1820 } = {}) {
 
   // ---- ring operations ------------------------------------------
 
-  function addNode() {
-    const id = nextId++;
-    const angle = Math.random() * Math.PI * 2;
-    const color = PALETTE_RGB[(id - 1) % PALETTE_RGB.length];
-    const node = { id, angle, color };
-    nodes.push(node);
-    nodes.sort((a, b) => a.angle - b.angle);
-    return node;
+  // Add one physical node — that means VNODES_PER vnodes at random
+  // angles, all sharing the same colour and pid.
+  function addPhysical() {
+    const pid   = nextPid++;
+    const color = PALETTE_RGB[(pid - 1) % PALETTE_RGB.length];
+    const added = [];
+    for (let i = 0; i < VNODES_PER; i++) {
+      const v = { pid, angle: Math.random() * Math.PI * 2, color };
+      vnodes.push(v);
+      added.push(v);
+    }
+    vnodes.sort((a, b) => a.angle - b.angle);
+    return pid;
   }
 
-  function removeRandomNode() {
-    if (nodes.length === 0) return null;
-    const i = Math.floor(Math.random() * nodes.length);
-    return nodes.splice(i, 1)[0];
+  // Remove one physical node — yanks all of its vnodes off the ring
+  // at once.
+  function removeRandomPhysical() {
+    const pids = uniquePids();
+    if (pids.length === 0) return null;
+    const pid = pids[Math.floor(Math.random() * pids.length)];
+    vnodes = vnodes.filter(v => v.pid !== pid);
+    return pid;
   }
 
-  // First node clockwise from `a`. Wraps around if no node has
-  // angle >= a (i.e., all nodes are "behind" the key).
+  function uniquePids() {
+    const s = new Set();
+    for (const v of vnodes) s.add(v.pid);
+    return [...s];
+  }
+
+  function physCount() { return uniquePids().length; }
+
+  // First vnode clockwise from `a`. Wraps around the ring.
   function ownerForAngle(a) {
-    for (const n of nodes) if (n.angle >= a) return n;
-    return nodes[0];
+    for (const v of vnodes) if (v.angle >= a) return v;
+    return vnodes[0];
   }
 
-  function nodeById(id) {
-    for (const n of nodes) if (n.id === id) return n;
-    return null;
+  // Per-physical key counts — drives the load-balance display.
+  function keyCounts() {
+    const counts = new Map();
+    for (const k of keys) {
+      counts.set(k.ownerPid, (counts.get(k.ownerPid) || 0) + 1);
+    }
+    return counts;
+  }
+
+  // Lookup the colour of a vnode for a given pid (first match — all
+  // vnodes of a pid share colour, so any will do).
+  function colorForPid(pid) {
+    for (const v of vnodes) if (v.pid === pid) return v.color;
+    return [120, 120, 120];
   }
 
   function init() {
-    nodes = [];
+    vnodes = [];
     keys = [];
-    nextId = 1;
-    for (let i = 0; i < MIN_NODES; i++) addNode();
+    nextPid = 1;
+    for (let i = 0; i < MIN_PHYS; i++) addPhysical();
     for (let i = 0; i < N_KEYS; i++) {
       keys.push({ angle: Math.random() * Math.PI * 2,
-                  ownerId: null, prevColor: null, migrateAt: 0 });
+                  ownerPid: null, prevColor: null, migrateAt: 0 });
     }
-    // Initial assignment — no migration animation on first paint.
     for (const k of keys) {
       const o = ownerForAngle(k.angle);
-      k.ownerId = o ? o.id : null;
+      k.ownerPid = o ? o.pid : null;
     }
   }
 
   // Diff key ownership before/after a mutation and start animations
   // on the keys whose owner changed.
   function applyMutation(mutate, now) {
-    const before = new Map();
-    for (const k of keys) before.set(k, nodeById(k.ownerId));
+    const beforePid = new Map();
+    for (const k of keys) beforePid.set(k, k.ownerPid);
 
     mutate();
 
     let changed = 0;
     for (const k of keys) {
       const newOwner = ownerForAngle(k.angle);
-      const oldOwner = before.get(k);
-      const oldId = oldOwner ? oldOwner.id : null;
-      const newId = newOwner ? newOwner.id : null;
-      if (newId !== oldId) {
-        k.prevColor = oldOwner ? oldOwner.color : null;
-        k.ownerId   = newId;
+      const oldPid = beforePid.get(k);
+      const newPid = newOwner ? newOwner.pid : null;
+      if (newPid !== oldPid) {
+        k.prevColor = oldPid != null ? colorForPid(oldPid) : null;
+        k.ownerPid  = newPid;
         k.migrateAt = now;
         changed++;
       }
@@ -155,43 +182,46 @@ export function hashring({ side = 'right', top = 1820 } = {}) {
   // ---- cycle ----------------------------------------------------
 
   function tick(now) {
-    highlight = null;
+    highlightPid = null;
     if (phase === 'grow') {
       let added;
-      const moved = applyMutation(() => { added = addNode(); }, now);
-      highlight = added;
-      lastOp = `+ node ${added.id} · ${moved}/${keys.length} keys move`;
-      if (nodes.length >= MAX_NODES) phase = 'shrink';
+      const moved = applyMutation(() => { added = addPhysical(); }, now);
+      highlightPid = added;
+      lastOp = `+ server ${added} · ${moved}/${keys.length} keys move`;
+      if (physCount() >= MAX_PHYS) phase = 'shrink';
     } else {
       let removed;
-      const moved = applyMutation(() => { removed = removeRandomNode(); }, now);
-      lastOp = `– node ${removed ? removed.id : '?'} · ${moved}/${keys.length} keys move`;
-      if (nodes.length <= MIN_NODES) phase = 'grow';
+      const moved = applyMutation(() => { removed = removeRandomPhysical(); }, now);
+      lastOp = `– server ${removed} · ${moved}/${keys.length} keys move`;
+      if (physCount() <= MIN_PHYS) phase = 'grow';
     }
   }
 
   // ---- drawing --------------------------------------------------
 
-  // ease-out cubic — animation starts fast and settles.
   function ease(t) { return 1 - Math.pow(1 - t, 3); }
 
   function draw(now) {
     ctx.clearRect(0, 0, W, H);
-    if (nodes.length === 0) return;
+    if (vnodes.length === 0) return;
 
     const cx = W / 2, cy = H / 2;
     const R  = Math.min(W, H) * 0.36;
 
-    // Ownership arcs — thick coloured strokes. Each node owns the arc
-    // from the previous node's angle to its own (going clockwise).
-    ctx.lineWidth = 16;
+    // Ownership arcs — many short coloured strokes now (one per
+    // vnode), so colours interleave around the ring instead of
+    // sitting in 5 fat slabs. Each arc extends ~0.01 rad past its
+    // boundary on both sides so adjacent colours overlap and the
+    // ring reads as continuous (no anti-aliasing seams).
+    ctx.lineWidth = 14;
     ctx.lineCap = 'butt';
-    for (let i = 0; i < nodes.length; i++) {
-      const curr = nodes[i];
-      const prev = nodes[(i - 1 + nodes.length) % nodes.length];
+    const overlap = 0.012;
+    for (let i = 0; i < vnodes.length; i++) {
+      const curr = vnodes[i];
+      const prev = vnodes[(i - 1 + vnodes.length) % vnodes.length];
       ctx.strokeStyle = rgb(curr.color, 0.85);
       ctx.beginPath();
-      ctx.arc(cx, cy, R, prev.angle, curr.angle);
+      ctx.arc(cx, cy, R, prev.angle - overlap, curr.angle + overlap);
       ctx.stroke();
     }
 
@@ -202,23 +232,16 @@ export function hashring({ side = 'right', top = 1820 } = {}) {
     ctx.arc(cx, cy, R, 0, Math.PI * 2);
     ctx.stroke();
 
-    // Keys — small dots inside the ring at their hash angle. Migrating
-    // keys cross-fade colour and grow a brief halo so the eye is drawn
-    // to *exactly* the slice that changed hands.
-    migrating = 0;
+    // Keys — small dots inside the ring at their hash angle.
     const keyR = R - 18;
     for (const k of keys) {
       const x = cx + keyR * Math.cos(k.angle);
       const y = cy + keyR * Math.sin(k.angle);
-
-      const owner = nodeById(k.ownerId);
-      const ownerCol = owner ? owner.color : [120, 120, 120];
+      const ownerCol = k.ownerPid != null ? colorForPid(k.ownerPid) : [120, 120, 120];
 
       const t = k.migrateAt ? Math.min(1, (now - k.migrateAt) / MIGRATE_MS) : 1;
       const animating = t < 1;
-      if (animating) migrating++;
 
-      // Halo: starts at radius 3, expands to 12, fades from 0.55 → 0.
       if (animating && k.prevColor) {
         const e = ease(t);
         const haloR = 3 + e * 9;
@@ -228,7 +251,6 @@ export function hashring({ side = 'right', top = 1820 } = {}) {
         ctx.fill();
       }
 
-      // The dot itself crossfades old → new colour.
       const dotR = animating ? 2.2 + (1 - t) * 1.6 : 2.2;
       ctx.fillStyle = (animating && k.prevColor)
         ? lerpRgb(k.prevColor, ownerCol, ease(t), 1)
@@ -238,23 +260,49 @@ export function hashring({ side = 'right', top = 1820 } = {}) {
       ctx.fill();
     }
 
-    // Node markers — sit on the ring, label = id.
-    ctx.font = "9px 'JetBrains Mono', monospace";
+    // Vnode markers — smaller circles, label is the pid (so a
+    // server's 4 vnodes share a number and a colour). Highlight all
+    // vnodes of the most-recently-changed pid.
+    ctx.font = "8px 'JetBrains Mono', monospace";
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
-    for (const n of nodes) {
-      const x = cx + R * Math.cos(n.angle);
-      const y = cy + R * Math.sin(n.angle);
-      const isHi = n === highlight;
-      ctx.fillStyle = rgb(n.color, 1);
+    for (const v of vnodes) {
+      const x = cx + R * Math.cos(v.angle);
+      const y = cy + R * Math.sin(v.angle);
+      const isHi = v.pid === highlightPid;
+      ctx.fillStyle = rgb(v.color, 1);
       ctx.strokeStyle = isHi ? 'rgba(243, 239, 230, 1)' : 'rgba(28, 31, 36, 0.55)';
-      ctx.lineWidth = isHi ? 2.4 : 1.2;
+      ctx.lineWidth = isHi ? 2 : 1;
       ctx.beginPath();
-      ctx.arc(x, y, 9, 0, Math.PI * 2);
+      ctx.arc(x, y, 6, 0, Math.PI * 2);
       ctx.fill();
       ctx.stroke();
       ctx.fillStyle = 'white';
-      ctx.fillText(String(n.id), x, y);
+      ctx.fillText(String(v.pid), x, y);
+    }
+
+    // Centre stack: per-server load, sorted by pid. Each row is a
+    // tiny coloured tag + the key count. Lets the eye verify that
+    // load is roughly even across servers — the entire point of
+    // virtual nodes.
+    const counts = keyCounts();
+    const pids = uniquePids().sort((a, b) => a - b);
+    const rowH = 12;
+    const totalH = rowH * pids.length;
+    let ry = cy - totalH / 2 + rowH / 2;
+    ctx.font = "10px 'JetBrains Mono', monospace";
+    ctx.textAlign = 'left';
+    ctx.textBaseline = 'middle';
+    for (const pid of pids) {
+      const c = counts.get(pid) || 0;
+      const col = colorForPid(pid);
+      // Coloured tag.
+      ctx.fillStyle = rgb(col, 0.92);
+      ctx.fillRect(cx - 26, ry - 4, 8, 8);
+      // Label "n3  12".
+      ctx.fillStyle = 'rgba(28, 31, 36, 0.80)';
+      ctx.fillText(`n${pid}  ${c}`, cx - 14, ry);
+      ry += rowH;
     }
 
     // Op label, top-left.
@@ -262,12 +310,9 @@ export function hashring({ side = 'right', top = 1820 } = {}) {
     ctx.font = "italic 13px 'Instrument Serif', serif";
     ctx.textAlign = 'left';
     ctx.textBaseline = 'top';
-    ctx.fillText(lastOp || (nodes.length + ' nodes · ' + N_KEYS + ' keys'), 10, 8);
+    ctx.fillText(lastOp || `${pids.length} servers · ${vnodes.length} vnodes · ${N_KEYS} keys`, 10, 8);
   }
 
-  // Single rAF loop drives both the tick cadence and the migration
-  // animation. setInterval would have made the keys "snap" between
-  // ticks; this way the halos breathe smoothly even between events.
   function frame() {
     const now = performance.now();
     if (now >= nextTickAt) {

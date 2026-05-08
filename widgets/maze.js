@@ -62,8 +62,11 @@ export function maze({ side = 'left', top = 720 } = {}) {
   wrap.insertBefore(statsEl, canvas);
 
   function relayout() {
+    // Round (not floor) so the cell-snapped width hits the target
+    // instead of sitting short of it; matches life's same fix and
+    // keeps the gutter widgets visually aligned.
     const target = responsiveWidth({ min: MIN_W, max: MAX_W });
-    CELL = Math.max(10, Math.floor(target / COLS));
+    CELL = Math.max(10, Math.round(target / COLS));
     W = CELL * COLS; H = CELL * ROWS;
     if (!place(wrap, { side, top, width: W })) return;
     const dpr = window.devicePixelRatio || 1;

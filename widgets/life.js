@@ -60,9 +60,11 @@ export function life({ side = 'right', top = 60 } = {}) {
 
   function relayout() {
     // Pick a target width based on the gutter, then snap to an integer
-    // cell size so cells render crisp.
+    // cell size so cells render crisp. Round (not floor) so we don't
+    // sit 10–25px shy of every other widget in the gutter — the small
+    // overshoot keeps life visually equal to its neighbours.
     const target = responsiveWidth({ min: MIN_W, max: MAX_W });
-    CELL = Math.max(8, Math.floor(target / COLS));
+    CELL = Math.max(8, Math.round(target / COLS));
     W = CELL * COLS;
     H = CELL * ROWS;
     if (!place(wrap, { side, top, width: W })) return;

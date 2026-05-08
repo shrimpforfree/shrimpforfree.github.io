@@ -8,7 +8,7 @@
 // Anything that's specific to a widget (Game of Life rules,
 // sorting algorithms, etc.) lives in that widget's own file.
 
-const MAIN_WIDTH = 620;     // matches main { max-width: 620px } in styles
+const MAIN_WIDTH = 720;     // matches main { max-width: 720px } in styles
 const GUTTER_PAD = 36;
 
 export function gutterWidth() {
@@ -18,7 +18,10 @@ export function gutterWidth() {
 // Pick a width that scales with the gutter, clamped to a widget's range.
 // Widgets call this in relayout() so they grow on wide screens and stay
 // readable on smaller ones. fraction = how much of the gutter to occupy.
-export function responsiveWidth({ min, max, fraction = 0.72 }) {
+// 0.80 lands the target at 480 on 1920px viewports — a clean multiple
+// of both 40 (life COLS) and 24 (maze COLS), so cell-snapped widgets
+// match the rest exactly instead of falling 8–16px short.
+export function responsiveWidth({ min, max, fraction = 0.80 }) {
   const w = Math.floor(gutterWidth() * fraction);
   return Math.min(max, Math.max(min, w));
 }
