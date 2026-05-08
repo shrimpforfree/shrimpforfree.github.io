@@ -1,0 +1,6 @@
+node_modules/
+.DS_Store
+package-lock.json
+
+# friend's portfolio — local reference only, NOT for deploy
+anish_index.html

@@ -1,0 +1,16 @@
+{
+  "name": "brian-portfolio",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Personal portfolio site for Brian Chen.",
+  "scripts": {
+    "start": "serve -l ${PORT:-3000} .",
+    "dev": "serve -l 8000 ."
+  },
+  "dependencies": {
+    "serve": "^14.2.4"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}

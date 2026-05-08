@@ -1,432 +1,555 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ChangYu (Brian) Chen - Software Engineer | Backend Systems & AI</title>
-    <meta name="description" content="ChangYu (Brian) Chen is a Computer Science & Data Science student at NYU specializing in backend systems, AI integrations, and scalable applications. Currently building event personalization systems at Hopscotch Labs.">
-    <meta name="keywords" content="ChangYu Chen, Brian Chen, Software Engineer, Backend Developer, Scala, Akka HTTP, AI, NYU, Computer Science">
-    <meta name="author" content="ChangYu (Brian) Chen">
-    
-    <!-- Open Graph / Facebook -->
-    <meta property="og:type" content="website">
-    <meta property="og:url" content="https://shrimpforfree.github.io/">
-    <meta property="og:title" content="ChangYu (Brian) Chen - Software Engineer | Backend Systems & AI">
-    <meta property="og:description" content="Computer Science & Data Science student at NYU specializing in backend systems, AI integrations, and scalable applications.">
-    
-    <!-- Twitter -->
-    <meta property="twitter:card" content="summary_large_image">
-    <meta property="twitter:url" content="https://shrimpforfree.github.io/">
-    <meta property="twitter:title" content="ChangYu (Brian) Chen - Software Engineer | Backend Systems & AI">
-    <meta property="twitter:description" content="Computer Science & Data Science student at NYU specializing in backend systems, AI integrations, and scalable applications.">
-    
-    <link rel="stylesheet" href="styles.css">
-    
-    <!-- JSON-LD Schema -->
-    <script type="application/ld+json">
-    {
-        "@context": "http://schema.org",
-        "@type": "Person",
-        "name": "ChangYu (Brian) Chen",
-        "jobTitle": "Software Engineer",
-        "description": "Computer Science & Data Science student at NYU specializing in backend systems, AI integrations, and scalable applications.",
-        "url": "https://shrimpforfree.github.io/",
-        "sameAs": [
-            "https://github.com/shrimpforfree",
-            "https://www.linkedin.com/in/brian-chen-07661a267/"
-        ],
-        "alumniOf": "New York University",
-        "knowsAbout": ["Scala", "Akka HTTP", "Backend Development", "AI Systems", "PostgreSQL", "Swift", "React"]
-    }
-    </script>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Brian Chen — backend, AI, and a small corner of the internet</title>
+<meta name="description" content="Personal page of ChangYu (Brian) Chen. CS & Data Science at NYU. Backend systems, agentic AI, iOS." />
+<meta name="author" content="ChangYu (Brian) Chen" />
+
+<!-- Open Graph -->
+<meta property="og:type" content="website" />
+<meta property="og:url" content="https://shrimpforfree.github.io/" />
+<meta property="og:title" content="Brian Chen — Software Engineer" />
+<meta property="og:description" content="CS & Data Science at NYU. Backend systems, agentic AI, iOS." />
+
+<!-- Two faces — italic serif for display, mono for everything else.
+     This contrast is doing most of the design work. -->
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=JetBrains+Mono:wght@300;400;500&display=swap" rel="stylesheet" />
+
+<style>
+  /* ----------------------------------------------------------------
+     Design tokens. Centralizing colors here means the whole palette
+     swaps by editing one block. The accent is steel-blue instead of
+     burnt orange to set this page apart from Anish's.
+  ---------------------------------------------------------------- */
+  :root {
+    --bg:        #f3efe6;             /* warm paper */
+    --bg-2:      #ece6d6;
+    --ink:       #1c1f24;             /* near-black with a hint of blue */
+    --muted:     #807a70;
+    --hairline:  rgba(28, 31, 36, 0.10);
+    --faint:     rgba(28, 31, 36, 0.18);
+    --accent:    #2f6aa0;             /* steel blue */
+    --life-color: rgba(47, 106, 160, 0.80);
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--bg);
+    color: var(--ink);
+    font-family: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
+    font-size: 13px;
+    line-height: 1.65;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+    min-height: 100vh;
+    overflow-x: hidden;
+    position: relative;
+  }
+
+  /* Paper grain. An SVG <feTurbulence> noise filter at low opacity,
+     mix-blend-mode: multiply darkens the bg slightly with the noise.
+     This is the single biggest "feel" upgrade per byte spent. */
+  body::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='220' height='220'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 0.55 0'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>");
+    background-size: 220px 220px;
+    opacity: 0.045;
+    pointer-events: none;
+    mix-blend-mode: multiply;
+    z-index: 3;
+  }
+
+  /* ----------------------------------------------------------------
+     The Conway's Game of Life canvas in the right margin.
+     position: absolute so it scrolls with the page (not fixed).
+     pointer-events: auto so you can click cells to toggle them.
+  ---------------------------------------------------------------- */
+  /* ----------------------------------------------------------------
+     Widgets — gutter ornaments. Each widget is a self-contained
+     module under /widgets that builds its own DOM and animates.
+     Layout: a column with optional [select], canvas, label, controls.
+  ---------------------------------------------------------------- */
+  .widget {
+    position: absolute;
+    z-index: 1;
+    pointer-events: auto;
+    user-select: none;
+  }
+  .widget canvas { display: block; cursor: crosshair; touch-action: none; }
+
+  .widget-select {
+    margin-top: 8px;
+    background: transparent;
+    border: 1px solid var(--hairline);
+    color: var(--ink);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    padding: 4px 6px;
+    cursor: pointer;
+    transition: border-color 0.2s, color 0.2s;
+  }
+  .widget-select:hover  { border-color: var(--accent); color: var(--accent); }
+  .widget-select:focus  { outline: none; border-color: var(--accent); }
+
+  .widget-label {
+    margin-top: 6px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 9.5px;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--muted);
+    opacity: 0.7;
+    pointer-events: none;
+    white-space: nowrap;
+  }
+
+  .widget-controls {
+    margin-top: 8px;
+    display: flex;
+    gap: 14px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 9.5px;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+  .widget-btn {
+    background: none;
+    border: none;
+    color: var(--muted);
+    cursor: pointer;
+    padding: 0;
+    font: inherit;
+    letter-spacing: inherit;
+    text-transform: inherit;
+    opacity: 0.75;
+    transition: color 0.2s, opacity 0.2s;
+  }
+  .widget-btn:hover { color: var(--ink); opacity: 1; }
+
+  /* No gutter to hold widgets on narrow viewports. */
+  @media (max-width: 1100px) {
+    .widget { display: none !important; }
+  }
+
+  /* ----------------------------------------------------------------
+     Main column. Narrow on purpose — readable line length.
+     z-index above the noise/canvas layers so text is always crisp.
+  ---------------------------------------------------------------- */
+  main {
+    position: relative;
+    z-index: 10;
+    max-width: 620px;
+    margin: 0 auto;
+    padding: 14vh 28px 8vh;
+  }
+
+  header { margin-bottom: 96px; }
+
+  /* The small caps eyebrow with a pulsing dot — newspaper-meta flavor. */
+  .eyebrow {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 10.5px;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 36px;
+  }
+  .dot {
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    background: var(--accent);
+    display: inline-block;
+    box-shadow: 0 0 0 0 rgba(47, 106, 160, 0.45);
+    animation: pulse 2.6s ease-in-out infinite;
+  }
+  @keyframes pulse {
+    0%, 100% { box-shadow: 0 0 0 0 rgba(47, 106, 160, 0.40); opacity: 0.85; }
+    50%      { box-shadow: 0 0 0 6px rgba(47, 106, 160, 0);    opacity: 1;    }
+  }
+
+  /* The big move: italic serif name. Family name in italic + accent
+     gives it a signature feel without a logo. clamp() keeps it sane
+     across viewports. */
+  h1 {
+    font-family: 'Instrument Serif', 'Times New Roman', serif;
+    font-weight: 400;
+    font-size: clamp(60px, 11vw, 124px);
+    line-height: 0.9;
+    letter-spacing: -0.025em;
+    margin-bottom: 36px;
+  }
+  h1 .it    { font-style: italic; color: var(--accent); }
+  h1 .punct { color: var(--muted); font-style: normal; }
+
+  .tagline {
+    font-family: 'Instrument Serif', serif;
+    font-style: italic;
+    font-size: 23px;
+    line-height: 1.45;
+    color: var(--ink);
+    max-width: 480px;
+  }
+
+  section { margin-bottom: 80px; }
+
+  .bio { max-width: 540px; }
+  .bio p {
+    font-size: 13px;
+    line-height: 1.8;
+    margin-bottom: 16px;
+  }
+  .bio p:last-child { margin-bottom: 0; }
+
+  /* Section headings: tiny, all-caps, hairline rule below.
+     The roman numeral on the right is a small typographic flourish. */
+  h2 {
+    font-size: 10px;
+    font-weight: 500;
+    letter-spacing: 0.24em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 22px;
+    padding-bottom: 14px;
+    border-bottom: 1px solid var(--hairline);
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+  }
+  h2 .num {
+    font-family: 'Instrument Serif', serif;
+    font-style: italic;
+    font-size: 14px;
+    letter-spacing: 0;
+    text-transform: none;
+    color: var(--muted);
+    opacity: 0.7;
+  }
+
+  /* Each entry is a 3-column grid: year | title+detail | arrow.
+     Same shape used for work and projects — consistency = rhythm. */
+  .entry {
+    display: grid;
+    grid-template-columns: 110px 1fr 24px;
+    gap: 28px;
+    padding: 20px 0;
+    border-bottom: 1px solid rgba(28, 31, 36, 0.05);
+    align-items: baseline;
+    transition: padding 0.25s ease;
+  }
+  .entry:last-child { border-bottom: none; }
+  .entry .arrow {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    color: var(--faint);
+    text-align: right;
+    transition: transform 0.25s ease, color 0.25s ease;
+  }
+  .entry:hover .arrow { transform: translateX(4px); color: var(--accent); }
+
+  .entry-year {
+    font-size: 11px;
+    color: var(--muted);
+    letter-spacing: 0.04em;
+    white-space: nowrap;
+  }
+
+  .entry-title {
+    font-family: 'Instrument Serif', serif;
+    font-size: 22px;
+    line-height: 1.2;
+    margin-bottom: 4px;
+    font-weight: 400;
+  }
+  .entry-title a { border-bottom: none; }
+  .entry-title a:hover { color: var(--accent); }
+
+  .entry-detail {
+    font-size: 12px;
+    color: var(--muted);
+    line-height: 1.55;
+  }
+
+  .entry-tags {
+    margin-top: 8px;
+    font-size: 10.5px;
+    letter-spacing: 0.08em;
+    color: var(--muted);
+    opacity: 0.85;
+  }
+
+  a {
+    color: inherit;
+    text-decoration: none;
+    border-bottom: 1px solid var(--faint);
+    transition: color 0.2s, border-color 0.2s;
+  }
+  a:hover { color: var(--accent); border-bottom-color: var(--accent); }
+
+  /* "Currently" block — labeled list with arrow bullets in the accent. */
+  .now {
+    display: grid;
+    grid-template-columns: 110px 1fr;
+    gap: 28px;
+    padding: 4px 0 0;
+    font-size: 13px;
+    line-height: 1.75;
+  }
+  .now .label { font-size: 11px; color: var(--muted); letter-spacing: 0.04em; }
+  .now ul { list-style: none; }
+  .now li { padding: 4px 0; color: var(--ink); }
+  .now li::before {
+    content: "→ ";
+    color: var(--accent);
+    font-family: 'JetBrains Mono', monospace;
+    margin-right: 4px;
+  }
+
+  footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 11px;
+    color: var(--muted);
+    padding: 32px 0 0;
+    border-top: 1px solid var(--hairline);
+    letter-spacing: 0.04em;
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+  footer .links { display: flex; gap: 18px; }
+  footer a { border-bottom-color: rgba(28, 31, 36, 0.22); }
+
+  /* Floating signature in bottom-right (hidden on mobile). */
+  .sig {
+    position: fixed;
+    right: 24px;
+    bottom: 18px;
+    z-index: 11;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 9px;
+    color: var(--muted);
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    pointer-events: none;
+    opacity: 0.7;
+  }
+
+  /* Reveal on load — stagger via .d1..d6 delay classes.
+     Small thing, big polish. */
+  .reveal {
+    opacity: 0;
+    transform: translateY(8px);
+    animation: rise 0.9s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  }
+  @keyframes rise {
+    to { opacity: 1; transform: translateY(0); }
+  }
+  .d1 { animation-delay: 0.05s; }
+  .d2 { animation-delay: 0.20s; }
+  .d3 { animation-delay: 0.35s; }
+  .d4 { animation-delay: 0.55s; }
+  .d5 { animation-delay: 0.75s; }
+  .d6 { animation-delay: 0.95s; }
+
+  ::selection { background: var(--accent); color: var(--bg); }
+
+  @media (max-width: 720px) {
+    main { padding: 10vh 22px 8vh; }
+    h1 { font-size: 56px; }
+    .tagline { font-size: 19px; }
+    .entry { grid-template-columns: 70px 1fr 18px; gap: 14px; }
+    .now { grid-template-columns: 70px 1fr; gap: 14px; }
+    .sig { display: none; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .reveal { animation: none; opacity: 1; transform: none; }
+  }
+</style>
 </head>
 <body>
-    <a href="#main" class="skip-to-content">Skip to main content</a>
-
+  <main>
     <header>
-        <div class="container">
-            <div class="hero">
-                <h1>ChangYu (Brian) Chen</h1>
-                <p class="tagline">"Love learning new coding languages and exploring how technology can solve real-world problems."</p>
-                <div class="hero-buttons">
-                    <a href="resume.pdf" class="btn btn-secondary" download aria-label="Download Brian Chen's Resume">Download Resume</a>
-                </div>
-            </div>
-        </div>
+      <div class="eyebrow reveal d1">
+        <span class="dot"></span>
+        <span id="loc">40.73° N · 73.99° W</span>
+        &nbsp;/&nbsp;
+        <span id="time">--:--</span>
+      </div>
+      <h1 class="reveal d2">Brian<br /><span class="it">Chen</span><span class="punct">.</span></h1>
+      <p class="tagline reveal d3">Backend engineer. I like systems that scale, models that cluster, and the small space where the two meet — mostly written in Rust or Scala.</p>
     </header>
 
-    <main id="main" class="container">
-        <section id="about" class="section">
-            <h2>About Me</h2>
-            <div class="card">
-                <p>I'm ChangYu (Brian) Chen, a junior majoring in Computer Science & Data Science at NYU. I'm passionate about building scalable backend systems, experimenting with agentic AI, and creating user-friendly applications. My experience spans backend engineering in Scala/Akka, iOS development in Swift, and full-stack projects. I value problem-solving, teamwork, and exploring how AI can make technology more seamless and human-centered.</p>
-            </div>
-        </section>
+    <section class="bio reveal d4">
+      <p>NYU CS &amp; Data Science, '26. I spend most of my time on backend infrastructure — Scala, Akka HTTP, Postgres, lately a lot of Rust — and the rest of it on agentic AI and iOS work.</p>
+    </section>
 
-        <section id="work" class="section">
-            <h2>Work Experience</h2>
-            <div class="timeline">
-                <div class="timeline-item">
-                    <div class="timeline-year">2025</div>
-                    <div class="timeline-content">
-                        <h3>Software Engineering Intern — Hopscotch Labs, Inc.</h3>
-                        <ul>
-                            <li>Built backend features with Scala/Akka HTTP, PostgreSQL, and SBT for BeeBot platform</li>
-                            <li>Designed admin tools including search, role-based access control, event deduplication, and API logging</li>
-                            <li>Implemented AI-driven event personalization using OpenAI embeddings and vector similarity search</li>
-                            <li>Refactored geofence logic using quadtree spatial indexing for improved performance</li>
-                            <li>Contributed to iOS features: Keychain integration, Bluetooth device manager, audio routing</li>
-                        </ul>
-                    </div>
-                </div>
-                
-                <div class="timeline-item">
-                    <div class="timeline-year">2024</div>
-                    <div class="timeline-content">
-                        <h3>Clinic Website Developer — Qing-Guang Clinic</h3>
-                        <ul>
-                            <li>Led full-stack website development from concept to deployment</li>
-                            <li>Implemented hosting, DNS configuration, and SEO optimization</li>
-                            <li>Built custom UI with HTML, integrated Canva assets and Google Sites to reduce operational costs</li>
-                            <li>Delivered cost-effective solution that improved online presence and patient outreach</li>
-                        </ul>
-                    </div>
-                </div>
-                
-                <div class="timeline-item">
-                    <div class="timeline-year">2024</div>
-                    <div class="timeline-content">
-                        <h3>Tech Assistant Intern — Shanhua Elementary School</h3>
-                        <ul>
-                            <li>Migrated legacy systems to secure cloud storage with automated backup implementation</li>
-                            <li>Diagnosed and resolved network connectivity issues across school infrastructure</li>
-                            <li>Replaced outdated hardware and provided ongoing technical support</li>
-                            <li>Supported curriculum technology integration for enhanced learning experiences</li>
-                        </ul>
-                    </div>
-                </div>
-                
-                <div class="timeline-item">
-                    <div class="timeline-year">2023</div>
-                    <div class="timeline-content">
-                        <h3>Product Testing Intern — Luyin Technology</h3>
-                        <ul>
-                            <li>Analyzed sales data and customer feedback to identify product improvement opportunities</li>
-                            <li>Created interactive dashboards for data insights and trend visualization</li>
-                            <li>Conducted comprehensive product testing and systematic bug reporting</li>
-                            <li>Supported cross-functional teams in product development and quality assurance</li>
-                        </ul>
-                    </div>
-                </div>
-            </div>
-        </section>
+    <section class="reveal d5">
+      <h2><span>Selected work</span><span class="num">i.</span></h2>
 
-        <section id="projects" class="section">
-            <h2>Selected Work</h2>
-            <div class="projects-list">
-                <div class="project-item">
-                    <div class="project-header" onclick="toggleProject(this)">
-                        <h3>BeeBot Event Recommendation System</h3>
-                        <div class="project-tech-preview">Scala, Akka HTTP, PostgreSQL, OpenAI Embeddings</div>
-                        <div class="expand-icon">▼</div>
-                    </div>
-                    <div class="project-content">
-                        <div class="project-details">
-                            <p><strong>Technologies:</strong> Scala, Akka HTTP, PostgreSQL, OpenAI Embeddings, PostGIS</p>
-                            <p>Built hybrid ranking system combining semantic similarity using OpenAI embeddings with geographical proximity and temporal recency weighting.</p>
-                            <p>Implemented PostgreSQL spatial functions for geo-radius filtering and cosine similarity for semantic event matching to generate personalized recommendation lists.</p>
-                            <div class="project-link">
-                                <a href="project-event-recommendation.html" class="btn btn-primary">View Full Project →</a>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="project-item">
-                    <div class="project-header" onclick="toggleProject(this)">
-                        <h3>iOS Bluetooth Device Manager</h3>
-                        <div class="project-tech-preview">Swift, Core Bluetooth, iOS Keychain, Audio Routing</div>
-                        <div class="expand-icon">▼</div>
-                    </div>
-                    <div class="project-content">
-                        <div class="project-details">
-                            <p><strong>Technologies:</strong> Swift, Core Bluetooth, iOS Keychain, Audio Routing</p>
-                            <p>Built comprehensive Bluetooth device management system for iOS with secure credential storage.</p>
-                            <p>Implemented audio routing controls and device pairing workflows for seamless user experience.</p>
-                        </div>
-                    </div>
-                </div>
-                
-            </div>
-        </section>
+      <a class="entry" href="#">
+        <div class="entry-year">2025 — now</div>
+        <div>
+          <div class="entry-title">Hopscotch Labs · BeeBot</div>
+          <div class="entry-detail">Backend features in Scala/Akka HTTP + Postgres. Admin tooling — search, RBAC, event dedup, API logs. Built an event personalization layer with vector embeddings + geo + recency, and ported geofence checks onto a quadtree.</div>
+          <div class="entry-tags">scala · akka · postgres · embeddings · ios</div>
+        </div>
+        <div class="arrow">→</div>
+      </a>
 
-        <section id="skills" class="section">
-            <h2>Skills</h2>
-            <div class="skills-container">
-                <div class="skills-sidebar">
-                    <div class="skill-nav-item active" data-category="languages">
-                        <h3>Languages</h3>
-                    </div>
-                    <div class="skill-nav-item" data-category="frameworks">
-                        <h3>Frameworks & Tools</h3>
-                    </div>
-                    <div class="skill-nav-item" data-category="specialties">
-                        <h3>Specialties</h3>
-                    </div>
-                    <div class="skill-nav-item" data-category="databases">
-                        <h3>Databases & Storage</h3>
-                    </div>
-                    <div class="skill-nav-item" data-category="ai">
-                        <h3>AI/ML Technologies</h3>
-                    </div>
-                    <div class="skill-nav-item" data-category="tools">
-                        <h3>Developer Tools</h3>
-                    </div>
-                </div>
-                
-                <div class="skills-content">
-                    <div class="skill-content active" id="languages">
-                        <h3>Languages</h3>
-                        <div class="skill-tags">
-                            <span class="skill-tag">Assembly</span>
-                            <span class="skill-tag">C/C++</span>
-                            <span class="skill-tag">GDScript</span>
-                            <span class="skill-tag">Haskell</span>
-                            <span class="skill-tag">Java</span>
-                            <span class="skill-tag">JavaScript/TypeScript</span>
-                            <span class="skill-tag">Lua</span>
-                            <span class="skill-tag">Python</span>
-                            <span class="skill-tag">Scala</span>
-                            <span class="skill-tag">Scratch</span>
-                            <span class="skill-tag">SQL</span>
-                            <span class="skill-tag">Swift</span>
-                        </div>
-                    </div>
-                    
-                    <div class="skill-content" id="frameworks">
-                        <h3>Frameworks & Tools</h3>
-                        <div class="skill-tags">
-                            <span class="skill-tag">Akka HTTP</span>
-                            <span class="skill-tag">React</span>
-                            <span class="skill-tag">UiPath</span>
-                            <span class="skill-tag">Docker</span>
-                            <span class="skill-tag">AWS</span>
-                            <span class="skill-tag">Postman</span>
-                            <span class="skill-tag">Beekeeper Studio</span>
-                        </div>
-                    </div>
-                    
-                    <div class="skill-content" id="specialties">
-                        <h3>Specialties</h3>
-                        <div class="skill-tags">
-                            <span class="skill-tag">Event Recommendations</span>
-                            <span class="skill-tag">Vector Search & Embeddings</span>
-                            <span class="skill-tag">Geospatial Ranking (PostGIS/Haversine)</span>
-                            <span class="skill-tag">Data Deduplication & Quality</span>
-                            <span class="skill-tag">API Design & Performance (Akka HTTP)</span>
-                            <span class="skill-tag">Streaming Pipelines (Akka Streams)</span>
-                            <span class="skill-tag">Observability & Tracing</span>
-                            <span class="skill-tag">Authentication & Keychain (iOS)</span>
-                            <span class="skill-tag">RBAC & Access Control</span>
-                            <span class="skill-tag">LLM Cost Optimization</span>
-                        </div>
-                    </div>
-                    
-                    <div class="skill-content" id="databases">
-                        <h3>Databases & Storage</h3>
-                        <div class="skill-tags">
-                            <span class="skill-tag">PostgreSQL</span>
-                            <span class="skill-tag">PostGIS</span>
-                            <span class="skill-tag">Firebase</span>
-                            <span class="skill-tag">Heroku</span>
-                            <span class="skill-tag">Cloud Storage</span>
-                            <span class="skill-tag">RAID Systems</span>
-                        </div>
-                    </div>
-                    
-                    <div class="skill-content" id="ai">
-                        <h3>AI/ML Technologies</h3>
-                        <div class="skill-tags">
-                            <span class="skill-tag">OpenAI API</span>
-                            <span class="skill-tag">Prompt Engineering</span>
-                            <span class="skill-tag">Vector Search</span>
-                            <span class="skill-tag">Cosine Similarity</span>
-                            <span class="skill-tag">Semantic Search</span>
-                        </div>
-                    </div>
-                    
-                    <div class="skill-content" id="tools">
-                        <h3>Developer Tools</h3>
-                        <div class="skill-tags">
-                            <span class="skill-tag">Git</span>
-                            <span class="skill-tag">Neovim ❤️</span>
-                            <span class="skill-tag">VS Code</span>
-                            <span class="skill-tag">SBT</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </section>
+      <a class="entry" href="#" target="_blank" rel="noopener">
+        <div class="entry-year">2024</div>
+        <div>
+          <div class="entry-title">Qing-Guang Clinic</div>
+          <div class="entry-detail">Full-stack site — concept through deploy. Hosting, DNS, SEO. Stitched HTML, Canva assets, and Google Sites into a low-maintenance front door for a small clinic.</div>
+          <div class="entry-tags">html · seo · dns</div>
+        </div>
+        <div class="arrow">→</div>
+      </a>
 
-        <section id="achievements" class="section">
-            <h2>Achievements & Awards</h2>
-            <div class="achievements-grid">
-                <div class="card achievement">
-                    <h3>🏆 National Game Design Competition</h3>
-                    <p>2nd place in Taiwan's national game design competition for developing a 2D scroller game using Scratch programming platform.</p>
-                </div>
-                
-                <div class="card achievement">
-                    <h3>🤖 EV3 Robot Competitions</h3>
-                    <p>Competed in robotics competitions using LEGO EV3 systems for racing cars, ball sorting mechanisms, and maze-solving algorithms. Developed autonomous navigation and sensor-based decision making under competitive time constraints.</p>
-                </div>
-                
-                <div class="card achievement">
-                    <h3>💻 Hackathon Participant</h3>
-                    <p>Active participant in hackathons, building innovative solutions under time constraints and collaborating with diverse teams.</p>
-                </div>
-            </div>
-        </section>
+      <a class="entry" href="#" target="_blank" rel="noopener">
+        <div class="entry-year">2024</div>
+        <div>
+          <div class="entry-title">Shanhua Elementary · Tech Assistant</div>
+          <div class="entry-detail">Migrated school storage to a backed-up cloud setup, debugged the network, and kept curriculum tech alive for a building full of kids and teachers.</div>
+          <div class="entry-tags">infra · ops</div>
+        </div>
+        <div class="arrow">→</div>
+      </a>
 
-        <section id="now" class="section">
-            <h2>What Drives Me</h2>
-            <div class="card now-content">
-                <div class="now-grid">
-                    <div class="now-item">
-                        <h3>🎯 Current Focus</h3>
-                        <p>Building scalable backend systems at Hopscotch Labs using Scala/Akka and exploring agentic AI applications for real-world problems. Actively working with UiPath for process automation and Akka actor systems for distributed agentic AI architectures.</p>
-                    </div>
-                    
-                    <div class="now-item">
-                        <h3>🏃‍♂️ Athletic Achievements</h3>
-                        <p>Passionate distance runner with countless gold medals in competitions. Also enjoy boxing and golfing as complementary sports for fitness and focus.</p>
-                    </div>
-                    
-                    <div class="now-item">
-                        <h3>💻 Programming Languages</h3>
-                        <p>Love learning new coding languages. Currently proficient in: Scala, Java, Python, JavaScript/TypeScript, Swift, C, C++, Assembly, Haskell, Lua, Scratch, and Godot scripting.</p>
-                    </div>
-                    
-                    <div class="now-item">
-                        <h3>📚 Continuous Learning</h3>
-                        <p>Diving deeper into distributed systems, advanced AI/ML techniques, and exploring how AI can create more seamless human-computer interactions.</p>
-                    </div>
-                </div>
-            </div>
-        </section>
+      <a class="entry" href="#" target="_blank" rel="noopener">
+        <div class="entry-year">2023</div>
+        <div>
+          <div class="entry-title">Luyin Technology · Product Testing</div>
+          <div class="entry-detail">Sales + customer-feedback analysis. Built dashboards for product teams and filed bug reports against pre-release builds.</div>
+          <div class="entry-tags">analytics · qa</div>
+        </div>
+        <div class="arrow">→</div>
+      </a>
+    </section>
 
-        <section id="testimonials" class="section">
-            <h2>What Others Say</h2>
-            <div class="testimonials-container">
-                <div class="testimonials-scroller">
-                    <div class="card testimonial">
-                        <p>"Fast learner who dove right in and started contributing immediately. Built many creative new features with remarkably few mistakes."</p>
-                        <div class="testimonial-author">
-                            <strong>— CTO, Hopscotch Labs</strong>
-                        </div>
-                    </div>
-                    
-                    <div class="card testimonial">
-                        <p>"Quickly diagnosed our network issues and helped us implement secure data storage solutions."</p>
-                        <div class="testimonial-author">
-                            <strong>— IT Administrator, Shanhua Elementary</strong>
-                        </div>
-                    </div>
-                    
-                    <div class="card testimonial">
-                        <p>"Delivered an excellent website that significantly improved our online presence while keeping costs much lower than expected."</p>
-                        <div class="testimonial-author">
-                            <strong>— Owner, Qing-Guang Clinic</strong>
-                        </div>
-                    </div>
-                    
-                    <div class="card testimonial">
-                        <p>"This kid was born running. Hit the ground coding from day one and never looked back."</p>
-                        <div class="testimonial-author">
-                            <strong>— Senior Developer, Hopscotch Labs</strong>
-                        </div>
-                    </div>
-                    
-                    <div class="card testimonial">
-                        <p>"Always analyzes first and lays out thorough research before coding. That's why his code is always clean and well-structured."</p>
-                        <div class="testimonial-author">
-                            <strong>— Project Manager</strong>
-                        </div>
-                    </div>
-                    
-                    <div class="card testimonial">
-                        <p>"Impressive ability to learn new technologies quickly and apply them effectively in real-world projects."</p>
-                        <div class="testimonial-author">
-                            <strong>— CTO, Hopscotch Labs</strong>
-                        </div>
-                    </div>
-                    
-                    <!-- Complete set of duplicates for seamless loop -->
-                    <div class="card testimonial">
-                        <p>"Fast learner who dove right in and started contributing immediately. Built many creative new features with remarkably few mistakes."</p>
-                        <div class="testimonial-author">
-                            <strong>— CTO, Hopscotch Labs</strong>
-                        </div>
-                    </div>
-                    
-                    <div class="card testimonial">
-                        <p>"Quickly diagnosed our network issues and helped us implement secure data storage solutions."</p>
-                        <div class="testimonial-author">
-                            <strong>— IT Administrator, Shanhua Elementary</strong>
-                        </div>
-                    </div>
-                    
-                    <div class="card testimonial">
-                        <p>"Delivered an excellent website that significantly improved our online presence while keeping costs much lower than expected."</p>
-                        <div class="testimonial-author">
-                            <strong>— Owner, Qing-Guang Clinic</strong>
-                        </div>
-                    </div>
-                    
-                    <div class="card testimonial">
-                        <p>"This kid was born running. Hit the ground coding from day one and never looked back."</p>
-                        <div class="testimonial-author">
-                            <strong>— Senior Developer, Hopscotch Labs</strong>
-                        </div>
-                    </div>
-                    
-                    <div class="card testimonial">
-                        <p>"Always analyzes first and lays out thorough research before coding. That's why his code is always clean and well-structured."</p>
-                        <div class="testimonial-author">
-                            <strong>— Project Manager</strong>
-                        </div>
-                    </div>
-                    
-                    <div class="card testimonial">
-                        <p>"Impressive ability to learn new technologies quickly and apply them effectively in real-world projects."</p>
-                        <div class="testimonial-author">
-                            <strong>— CTO, Hopscotch Labs</strong>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </section>
+    <section class="reveal d5">
+      <h2><span>Stack &amp; interests</span><span class="num">ii.</span></h2>
 
-        <section id="education" class="section">
-            <h2>Education</h2>
-            <div class="card">
-                <h3>New York University</h3>
-                <p><strong>B.S. Computer Science & Data Science</strong> (2022 - 2026)</p>
-                <p><strong>Coursework:</strong> Algorithms, Computer Systems, Statistics, Data Science, AI</p>
-            </div>
-        </section>
-    </main>
+      <div class="now">
+        <div class="label">languages</div>
+        <ul><li>Rust &amp; Scala (favorites), Swift, Java, Python, SQL</li></ul>
+      </div>
+      <div class="now">
+        <div class="label">tools</div>
+        <ul><li>Akka HTTP, React, Docker, AWS, UiPath</li></ul>
+      </div>
+      <div class="now">
+        <div class="label">into</div>
+        <ul>
+          <li>backend systems and recommendation infra</li>
+          <li>agentic AI — when an LLM stops being a chatbot and starts being a coworker</li>
+          <li>iOS — Keychain, Bluetooth, audio routing</li>
+        </ul>
+      </div>
+    </section>
 
-    <script src="navigation-bar.js"></script>
-    <script src="contact-banner.js"></script>
-    <script src="script.js"></script>
-    <script>
-        // Initialize navigation for main portfolio page
-        NavigationBar.create({
-            backText: 'Brian Chen - Portfolio',
-            isHomePage: true,
-            showBadges: false
-        });
-    </script>
+    <section class="reveal d6">
+      <h2><span>Currently</span><span class="num">iii.</span></h2>
+      <div class="now">
+        <div class="label">writing</div>
+        <ul>
+          <li>Rust — async runtimes, ownership puzzles, the borrow checker as a friend</li>
+          <li>Scala — Akka, FP-ish patterns, type-driven design</li>
+        </ul>
+      </div>
+      <div class="now">
+        <div class="label">building</div>
+        <ul>
+          <li>event personalization at Hopscotch Labs</li>
+          <li>this website (clearly)</li>
+        </ul>
+      </div>
+      <div class="now">
+        <div class="label">reading</div>
+        <ul><li>papers on retrieval + ranking, plus the occasional Foucault</li></ul>
+      </div>
+    </section>
+
+    <footer class="reveal d6">
+      <div class="links">
+        <a href="mailto:brian@hopscotchlabs.biz">email</a>
+        <a href="https://github.com/shrimpforfree" target="_blank" rel="noopener">github</a>
+        <a href="https://www.linkedin.com/in/brian-chen-07661a267/" target="_blank" rel="noopener">linkedin</a>
+        <a href="resume.pdf" download>resume</a>
+      </div>
+      <div>let's build something together</div>
+    </footer>
+  </main>
+
+  <div class="sig">— b · 2026 ──</div>
+
+<script>
+/* ============================================================
+   Tiny clock in the eyebrow. Pure cosmetic — feels "live".
+============================================================ */
+(() => {
+  const el = document.getElementById('time');
+  if (!el) return;
+  function tick() {
+    const now = new Date();
+    const hh = String(now.getHours()).padStart(2, '0');
+    const mm = String(now.getMinutes()).padStart(2, '0');
+    el.textContent = hh + ':' + mm;
+  }
+  tick();
+  setInterval(tick, 30 * 1000);
+})();
+</script>
+
+<!-- ============================================================
+     Widget registry. Each widget lives in its own file under
+     /widgets and exports a single function. To add a widget:
+         import { foo } from './widgets/foo.js';
+         foo({ side: 'left', top: 700 });
+     To remove one, delete its line. That's it.
+
+     `side` = 'left' | 'right' (which gutter)
+     `top`  = pixels from top of page (where it scroll-anchors)
+
+     Note: <script type="module"> requires the page be served
+     over HTTP (not opened as file://). For local dev:
+         cd brian-portfolio && python3 -m http.server 8000
+     then open http://localhost:8000/index-new.html
+============================================================ -->
+<script type="module">
+  import { life }         from './widgets/life.js';
+  import { sorting }      from './widgets/sorting.js';
+  import { maze }         from './widgets/maze.js';
+  import { fibonacci }    from './widgets/fibonacci.js';
+  import { quadtree }     from './widgets/quadtree.js';
+  import { decisionTree } from './widgets/decision-tree.js';
+
+  // === widgets ===========================================
+  // top = pixels from page top — staggered so the gutters
+  // stay populated as you scroll. Add a line to add a widget;
+  // delete one to remove it.
+  life        ({ side: 'right', top: 60   });   // header
+  sorting     ({ side: 'left',  top: 80   });   // header
+  maze        ({ side: 'left',  top: 720  });   // bio → work
+  fibonacci   ({ side: 'right', top: 740  });   // bio → work
+  decisionTree({ side: 'right', top: 1280 });   // mid-work
+  quadtree    ({ side: 'left',  top: 1340 });   // mid-work
+  // =======================================================
+</script>
+
 </body>
 </html>

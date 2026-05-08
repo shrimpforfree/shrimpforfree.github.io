@@ -1,0 +1,205 @@
+// widgets/maze.js
+//
+// Random maze generation + BFS solving, animated.
+//
+// Generation: recursive backtracker (DFS). Carves a perfect maze
+// (exactly one path between any two cells, no loops).
+// Solving:    breadth-first search from top-left to bottom-right.
+//             Visited cells fade in; the final path draws bold once
+//             the goal is reached.
+// Cycle:      after the path is shown, a short pause, then a fresh
+//             maze is generated and the solve restarts.
+
+import { mount, place, onResize, visibility, reducedMotion, responsiveWidth }
+  from './_helpers.js';
+
+const COLS = 24;
+const ROWS = 16;
+const MIN_W = 320;
+const MAX_W = 480;
+const TICK_MS = 35;
+const STEPS_PER_TICK = 2;
+
+export function maze({ side = 'left', top = 720 } = {}) {
+  let CELL = 14;
+  let W = COLS * CELL, H = ROWS * CELL;
+  let cells = [];
+  let bfsState = null;
+  let pauseFrames = 0;
+  let tickId = null;
+
+  const canvas = document.createElement('canvas');
+  const ctx    = canvas.getContext('2d');
+
+  const { wrap } = mount({
+    content: canvas,
+    label: '// maze · bfs solver',
+    controls: [
+      { id: 'regen', text: '[ regenerate ]', onClick: regenerate },
+    ],
+  });
+
+  function relayout() {
+    const target = responsiveWidth({ min: MIN_W, max: MAX_W });
+    CELL = Math.max(10, Math.floor(target / COLS));
+    W = CELL * COLS; H = CELL * ROWS;
+    if (!place(wrap, { side, top, width: W })) return;
+    const dpr = window.devicePixelRatio || 1;
+    canvas.width  = Math.floor(W * dpr);
+    canvas.height = Math.floor(H * dpr);
+    canvas.style.width  = W + 'px';
+    canvas.style.height = H + 'px';
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    draw();
+  }
+
+  // ---- generation: recursive backtracker (iterative w/ stack) ----
+  function generate() {
+    cells = Array.from({ length: ROWS }, () =>
+      Array.from({ length: COLS }, () => ({
+        walls: { n: true, e: true, s: true, w: true },
+        gen: false,
+      })));
+    const DIRS = [['n', 0, -1, 's'], ['e', 1, 0, 'w'], ['s', 0, 1, 'n'], ['w', -1, 0, 'e']];
+    const stack = [[0, 0]];
+    cells[0][0].gen = true;
+    while (stack.length) {
+      const [x, y] = stack[stack.length - 1];
+      const dirs = [...DIRS].sort(() => Math.random() - 0.5);
+      let moved = false;
+      for (const [dir, dx, dy, opp] of dirs) {
+        const nx = x + dx, ny = y + dy;
+        if (nx < 0 || ny < 0 || nx >= COLS || ny >= ROWS) continue;
+        if (cells[ny][nx].gen) continue;
+        cells[y][x].walls[dir] = false;
+        cells[ny][nx].walls[opp] = false;
+        cells[ny][nx].gen = true;
+        stack.push([nx, ny]);
+        moved = true;
+        break;
+      }
+      if (!moved) stack.pop();
+    }
+  }
+
+  // ---- BFS solver state ----
+  const key = ({ x, y }) => y * COLS + x;
+
+  function startBFS() {
+    const start = { x: 0, y: 0 };
+    const end   = { x: COLS - 1, y: ROWS - 1 };
+    bfsState = {
+      queue:   [start],
+      visited: new Set([key(start)]),
+      parent:  new Map(),
+      end,
+      done:    false,
+      path:    null,
+    };
+  }
+
+  function neighbors(c) {
+    const out = [];
+    const w = cells[c.y][c.x].walls;
+    if (!w.n) out.push({ x: c.x,     y: c.y - 1 });
+    if (!w.e) out.push({ x: c.x + 1, y: c.y     });
+    if (!w.s) out.push({ x: c.x,     y: c.y + 1 });
+    if (!w.w) out.push({ x: c.x - 1, y: c.y     });
+    return out;
+  }
+
+  function tick() {
+    if (!bfsState) return;
+    if (bfsState.done) {
+      // Hold the finished path on screen briefly, then regenerate.
+      pauseFrames++;
+      if (pauseFrames > 50) { pauseFrames = 0; regenerate(); }
+      return;
+    }
+    for (let i = 0; i < STEPS_PER_TICK; i++) {
+      if (!bfsState.queue.length) { bfsState.done = true; break; }
+      const cell = bfsState.queue.shift();
+      if (cell.x === bfsState.end.x && cell.y === bfsState.end.y) {
+        // Reconstruct shortest path back to start.
+        const path = [];
+        let cur = cell;
+        while (cur) { path.unshift(cur); cur = bfsState.parent.get(key(cur)); }
+        bfsState.path = path;
+        bfsState.done = true;
+        break;
+      }
+      for (const n of neighbors(cell)) {
+        if (!bfsState.visited.has(key(n))) {
+          bfsState.visited.add(key(n));
+          bfsState.parent.set(key(n), cell);
+          bfsState.queue.push(n);
+        }
+      }
+    }
+    draw();
+  }
+
+  function regenerate() {
+    generate();
+    startBFS();
+    pauseFrames = 0;
+    draw();
+  }
+
+  // ---- drawing ----
+  function draw() {
+    ctx.clearRect(0, 0, W, H);
+
+    // Visited tint.
+    if (bfsState) {
+      ctx.fillStyle = 'rgba(47, 106, 160, 0.16)';
+      for (const k of bfsState.visited) {
+        const x = k % COLS, y = (k - x) / COLS;
+        ctx.fillRect(x * CELL, y * CELL, CELL, CELL);
+      }
+    }
+
+    // Walls.
+    ctx.strokeStyle = 'rgba(28, 31, 36, 0.65)';
+    ctx.lineWidth = 1;
+    ctx.beginPath();
+    for (let y = 0; y < ROWS; y++) {
+      for (let x = 0; x < COLS; x++) {
+        const w  = cells[y][x].walls;
+        const px = x * CELL, py = y * CELL;
+        if (w.n) { ctx.moveTo(px,        py);        ctx.lineTo(px + CELL, py);        }
+        if (w.e) { ctx.moveTo(px + CELL, py);        ctx.lineTo(px + CELL, py + CELL); }
+        if (w.s) { ctx.moveTo(px,        py + CELL); ctx.lineTo(px + CELL, py + CELL); }
+        if (w.w) { ctx.moveTo(px,        py);        ctx.lineTo(px,        py + CELL); }
+      }
+    }
+    ctx.stroke();
+
+    // Final path.
+    if (bfsState && bfsState.path) {
+      ctx.strokeStyle = 'rgba(47, 106, 160, 0.95)';
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      for (let i = 0; i < bfsState.path.length; i++) {
+        const p = bfsState.path[i];
+        const x = p.x * CELL + CELL / 2;
+        const y = p.y * CELL + CELL / 2;
+        if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+      }
+      ctx.stroke();
+    }
+  }
+
+  function start() { if (!tickId) tickId = setInterval(tick, TICK_MS); }
+  function stop()  { if (tickId)  { clearInterval(tickId); tickId = null; } }
+
+  visibility(wrap, { onShow: start, onHide: stop });
+  onResize(relayout);
+
+  // Order matters: relayout() calls draw(), and draw() reads `cells`,
+  // so the maze must be generated before the first layout pass.
+  generate();
+  startBFS();
+  relayout();
+  if (!reducedMotion()) start();
+}
