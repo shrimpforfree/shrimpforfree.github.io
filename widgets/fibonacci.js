@@ -47,15 +47,41 @@ export function fibonacci({ side = 'right', top = 740 } = {}) {
   let mergePair = null;       // [x, y] currently merging during consolidate
   let cutFlash = [];          // nodes freshly cut this tick — rust ring
   let consolidator = null;    // active consolidate generator, if any
-  let tickId = null;
+  let populateLeft = 0;       // [ populate 10 ] queues forced inserts
+  let rafId = null;
+  let nextOpAt = 0;
+  let lastFrameAt = 0;
 
   const canvas = document.createElement('canvas');
   const ctx    = canvas.getContext('2d');
 
-  const { wrap } = mount({
+  const { wrap, buttons } = mount({
     content: canvas,
     label: '// fibonacci heap · mixed ops',
+    controls: [
+      { id: 'populate', text: '[ populate 10 ]',
+        onClick: () => { if (populateLeft === 0) { populateLeft = 10; syncPopulateBtn(); } } },
+      { id: 'clear',    text: '[ clear ]',       onClick: clear },
+    ],
   });
+
+  // Reflect populateLeft on the button: disabled + dimmed while a
+  // populate sequence is in flight, and the label counts down so the
+  // user can see how many inserts are left.
+  function syncPopulateBtn() {
+    const b = buttons.populate;
+    if (populateLeft > 0) {
+      b.disabled = true;
+      b.style.opacity = '0.35';
+      b.style.cursor = 'default';
+      b.textContent = `[ populating ${populateLeft} ]`;
+    } else {
+      b.disabled = false;
+      b.style.opacity = '';
+      b.style.cursor = '';
+      b.textContent = '[ populate 10 ]';
+    }
+  }
 
   function relayout() {
     W = responsiveWidth({ min: MIN_W, max: MAX_W });
@@ -74,8 +100,13 @@ export function fibonacci({ side = 'right', top = 740 } = {}) {
   // ---- heap state + operations ------------------------------------
 
   function newHeap() { return { roots: [], min: null, n: 0 }; }
+  // x,y = currently rendered position (eased each frame).
+  // tx,ty = target position written by layout().
   function makeNode(key) {
-    return { key, children: [], parent: null, mark: false, x: 0, y: 0 };
+    return {
+      key, children: [], parent: null, mark: false,
+      x: 0, y: 0, tx: 0, ty: 0,
+    };
   }
 
   function fhInsert(key) {
@@ -83,6 +114,10 @@ export function fibonacci({ side = 'right', top = 740 } = {}) {
     heap.roots.push(node);
     if (!heap.min || key < heap.min.key) heap.min = node;
     heap.n++;
+    // Slide in from below the canvas — layout() will fix tx/ty in a
+    // moment and the rAF loop will ease the node up to its target.
+    node.x = W / 2;
+    node.y = H + 30;
     return node;
   }
 
@@ -190,6 +225,7 @@ export function fibonacci({ side = 'right', top = 740 } = {}) {
   // insert when nearly empty and prefer extract/decrease when nearly
   // full, so the heap doesn't bounce off either extreme.
   function pickOp() {
+    if (populateLeft > 0)        { populateLeft--; return 'insert'; }
     if (heap.n === 0)            return 'insert';
     if (heap.n >= MAX_NODES)     return Math.random() < 0.6 ? 'extract' : 'decrease';
     const r = Math.random();
@@ -197,6 +233,20 @@ export function fibonacci({ side = 'right', top = 740 } = {}) {
     if (r < 0.50) return 'insert';
     if (r < 0.80) return 'extract';
     return 'decrease';
+  }
+
+  // Wipe the heap — abort any in-flight consolidate and reset every
+  // bit of per-frame state so we don't carry stale references to
+  // freed nodes.
+  function clear() {
+    heap = newHeap();
+    consolidator = null;
+    highlight = null;
+    mergePair = null;
+    cutFlash = [];
+    populateLeft = 0;
+    lastOp = 'cleared';
+    syncPopulateBtn();
   }
 
   function tick() {
@@ -216,7 +266,6 @@ export function fibonacci({ side = 'right', top = 740 } = {}) {
         lastOp = `consolidate · merge`;
       }
       layout();
-      draw();
       return;
     }
 
@@ -253,7 +302,23 @@ export function fibonacci({ side = 'right', top = 740 } = {}) {
     }
 
     layout();
-    draw();
+    syncPopulateBtn();
+  }
+
+  // ---- per-frame interpolation -----------------------------------
+
+  // Ease every node's rendered position toward its layout target. dt
+  // in ms; the constant tunes how fast nodes settle (≈250ms to be
+  // visually "there"). Frame-rate independent because the easing
+  // factor is derived from elapsed time.
+  function easePositions(dt) {
+    const k = 1 - Math.exp(-dt * 0.012);
+    function walk(n) {
+      n.x += (n.tx - n.x) * k;
+      n.y += (n.ty - n.y) * k;
+      for (const c of n.children) walk(c);
+    }
+    for (const r of heap.roots) walk(r);
   }
 
   // ---- layout: lay trees side-by-side, recursively place children -
@@ -278,8 +343,8 @@ export function fibonacci({ side = 'right', top = 740 } = {}) {
 
   function placeTree(node, x, y, unit, stepY) {
     const w = subtreeWidth(node);
-    node.x = x + (w * unit) / 2;
-    node.y = y;
+    node.tx = x + (w * unit) / 2;
+    node.ty = y;
     let cx = x;
     for (const c of node.children) {
       placeTree(c, cx, y + stepY, unit, stepY);
@@ -402,14 +467,38 @@ export function fibonacci({ side = 'right', top = 740 } = {}) {
     );
   }
 
-  function start() { if (!tickId) tickId = setInterval(tick, TICK_MS); }
-  function stop()  { if (tickId)  { clearInterval(tickId); tickId = null; } }
+  function frame() {
+    const now = performance.now();
+    const dt = Math.min(64, now - lastFrameAt);
+    lastFrameAt = now;
+    if (now >= nextOpAt) {
+      tick();
+      nextOpAt = now + TICK_MS;
+    }
+    easePositions(dt);
+    draw();
+    rafId = requestAnimationFrame(frame);
+  }
+
+  function start() {
+    if (rafId) return;
+    lastFrameAt = performance.now();
+    nextOpAt    = lastFrameAt + TICK_MS;
+    rafId = requestAnimationFrame(frame);
+  }
+  function stop() {
+    if (rafId) { cancelAnimationFrame(rafId); rafId = null; }
+  }
 
   visibility(wrap, { onShow: start, onHide: stop });
   onResize(relayout);
 
-  // Pre-seed so the first frame isn't empty.
+  // Pre-seed so the first frame isn't empty. Snap them to their
+  // target positions immediately — we don't want all 4 sliding in
+  // from below the moment the page loads.
   for (let i = 0; i < 4; i++) fhInsert(randomKey());
   relayout();
+  for (const n of allNodes()) { n.x = n.tx; n.y = n.ty; }
   if (!reducedMotion()) start();
+  else                   draw();
 }
