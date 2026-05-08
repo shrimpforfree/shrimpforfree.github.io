@@ -16,13 +16,20 @@ const MAX_W = 480;     // largest rendered width
 const ASPECT = 0.85;   // height / width
 const TICK_MS = 18;    // step interval — lower = faster
 
+// fn = generator, big = average-case complexity (shown in the
+// dropdown label so the n²/n log n gap is legible at a glance).
 const ALGOS = {
-  bubble:    bubbleSort,
-  insertion: insertionSort,
-  selection: selectionSort,
-  merge:     mergeSort,
-  quick:     quickSort,
-  heap:      heapSort,
+  bubble:    { fn: bubbleSort,    big: 'n²' },
+  insertion: { fn: insertionSort, big: 'n²' },
+  selection: { fn: selectionSort, big: 'n²' },
+  shell:     { fn: shellSort,     big: 'n^1.5' },
+  cocktail:  { fn: cocktailSort,  big: 'n²' },
+  comb:      { fn: combSort,      big: 'n²' },
+  gnome:     { fn: gnomeSort,     big: 'n²' },
+  pancake:   { fn: pancakeSort,   big: 'n²' },
+  merge:     { fn: mergeSort,     big: 'n log n' },
+  quick:     { fn: quickSort,     big: 'n log n' },
+  heap:      { fn: heapSort,      big: 'n log n' },
 };
 
 export function sorting({ side = 'left', top = 60 } = {}) {
@@ -40,14 +47,16 @@ export function sorting({ side = 'left', top = 60 } = {}) {
   const canvas = document.createElement('canvas');
   const ctx    = canvas.getContext('2d');
 
-  const { wrap, buttons, select: selectEl } = mount({
+  const { wrap, buttons } = mount({
     content: canvas,
     select: {
-      options: Object.keys(ALGOS).map(k => ({ value: k, label: k })),
+      options: Object.entries(ALGOS).map(([k, v]) => ({
+        value: k, label: `${k} · O(${v.big})`,
+      })),
       value:   'bubble',
       onChange: (v) => { algo = v; restart(); },
     },
-    label: '// sort · auto-cycles through algorithms',
+    label: '// sort · pick an algorithm',
     controls: [
       { id: 'shuffle', text: '[ shuffle ]', onClick: () => { arr = shuffled(N); restart(); } },
       { id: 'pause',   text: '[ pause ]',   onClick: togglePause },
@@ -69,20 +78,15 @@ export function sorting({ side = 'left', top = 60 } = {}) {
 
   function restart() {
     stats = { cmp: 0, swap: 0 };
-    gen = ALGOS[algo](arr, stats);
+    gen = ALGOS[algo].fn(arr, stats);
     active = [];
     draw();
   }
 
   function tick() {
     if (!gen) {
-      // Sort finished — advance to the next algorithm and shuffle.
-      // Manual dropdown picks still take effect immediately (handled
-      // by the onChange callback in mount()); this only runs at the
-      // end of an auto-pass.
-      const keys = Object.keys(ALGOS);
-      algo = keys[(keys.indexOf(algo) + 1) % keys.length];
-      if (selectEl) selectEl.value = algo;
+      // Sort finished — auto-shuffle and start a new pass on the
+      // same algorithm. Use the dropdown to switch.
       arr = shuffled(N);
       restart();
       return;
@@ -295,5 +299,129 @@ function* heapSort(a, s) {
     s.swap++;
     yield [0, e];
     yield* siftDown(0, e - 1);
+  }
+}
+
+// Shell sort — gap-based insertion. Halving gap sequence (Shell's
+// original). The shrinking gaps trade many small partial passes for
+// fewer big shifts; visually you see "long-range" swaps near big
+// gaps then tighter local activity as gap shrinks to 1.
+function* shellSort(a, s) {
+  const n = a.length;
+  for (let gap = n >> 1; gap > 0; gap >>= 1) {
+    for (let i = gap; i < n; i++) {
+      const tmp = a[i];
+      let j = i;
+      while (j >= gap) {
+        s.cmp++;
+        yield [j, j - gap];
+        if (a[j - gap] <= tmp) break;
+        a[j] = a[j - gap];
+        s.swap++;
+        j -= gap;
+      }
+      if (j !== i) { a[j] = tmp; s.swap++; }
+    }
+  }
+}
+
+// Cocktail shaker — bubble that bounces. Forward pass pushes the
+// largest to the end, backward pass pulls the smallest to the start.
+// Slightly fewer passes than plain bubble in practice; same O(n²).
+function* cocktailSort(a, s) {
+  let lo = 0, hi = a.length - 1;
+  while (lo < hi) {
+    let swapped = false;
+    for (let i = lo; i < hi; i++) {
+      s.cmp++;
+      yield [i, i + 1];
+      if (a[i] > a[i + 1]) {
+        [a[i], a[i + 1]] = [a[i + 1], a[i]];
+        s.swap++;
+        swapped = true;
+      }
+    }
+    if (!swapped) break;
+    hi--;
+    swapped = false;
+    for (let i = hi; i > lo; i--) {
+      s.cmp++;
+      yield [i - 1, i];
+      if (a[i - 1] > a[i]) {
+        [a[i - 1], a[i]] = [a[i], a[i - 1]];
+        s.swap++;
+        swapped = true;
+      }
+    }
+    if (!swapped) break;
+    lo++;
+  }
+}
+
+// Comb sort — bubble with a shrinking gap (factor 1.3). Kills "small
+// values stuck at the end" (turtles) much faster than plain bubble;
+// degenerates to bubble once gap reaches 1.
+function* combSort(a, s) {
+  const n = a.length;
+  let gap = n;
+  let sorted = false;
+  while (!sorted) {
+    gap = Math.max(1, Math.floor(gap / 1.3));
+    if (gap === 1) sorted = true;
+    for (let i = 0; i + gap < n; i++) {
+      s.cmp++;
+      yield [i, i + gap];
+      if (a[i] > a[i + gap]) {
+        [a[i], a[i + gap]] = [a[i + gap], a[i]];
+        s.swap++;
+        sorted = false;
+      }
+    }
+  }
+}
+
+// Gnome sort — the "garden gnome" algorithm. Walk forward; if the
+// pair behind you is out of order, swap and step back one. Looks
+// almost meditative — single comparison at a time, oscillating
+// pointer that gradually advances.
+function* gnomeSort(a, s) {
+  let i = 1;
+  while (i < a.length) {
+    if (i === 0) { i = 1; continue; }
+    s.cmp++;
+    yield [i - 1, i];
+    if (a[i - 1] <= a[i]) {
+      i++;
+    } else {
+      [a[i - 1], a[i]] = [a[i], a[i - 1]];
+      s.swap++;
+      i--;
+    }
+  }
+}
+
+// Pancake sort — only operation allowed is "flip the prefix". Find
+// the max in the unsorted region, flip it to the front, then flip
+// the whole unsorted region to send the max to the back. Each tier
+// produces a dramatic block-reversal.
+function* pancakeSort(a, s) {
+  for (let curSize = a.length; curSize > 1; curSize--) {
+    let mi = 0;
+    for (let i = 1; i < curSize; i++) {
+      s.cmp++;
+      yield [i, mi];
+      if (a[i] > a[mi]) mi = i;
+    }
+    if (mi === curSize - 1) continue;     // already in place
+    if (mi > 0) yield* flip(a, s, mi);    // bring max to front
+    yield* flip(a, s, curSize - 1);       // flip whole region
+  }
+}
+
+function* flip(a, s, end) {
+  for (let lo = 0, hi = end; lo < hi; lo++, hi--) {
+    [a[lo], a[hi]] = [a[hi], a[lo]];
+    s.swap++;
+    yield [lo, hi];
   }
 }
