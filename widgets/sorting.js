@@ -40,14 +40,14 @@ export function sorting({ side = 'left', top = 60 } = {}) {
   const canvas = document.createElement('canvas');
   const ctx    = canvas.getContext('2d');
 
-  const { wrap, buttons } = mount({
+  const { wrap, buttons, select: selectEl } = mount({
     content: canvas,
     select: {
       options: Object.keys(ALGOS).map(k => ({ value: k, label: k })),
       value:   'bubble',
       onChange: (v) => { algo = v; restart(); },
     },
-    label: '// sort · pick an algorithm',
+    label: '// sort · auto-cycles through algorithms',
     controls: [
       { id: 'shuffle', text: '[ shuffle ]', onClick: () => { arr = shuffled(N); restart(); } },
       { id: 'pause',   text: '[ pause ]',   onClick: togglePause },
@@ -76,7 +76,13 @@ export function sorting({ side = 'left', top = 60 } = {}) {
 
   function tick() {
     if (!gen) {
-      // Sort finished — auto-shuffle and start a new pass.
+      // Sort finished — advance to the next algorithm and shuffle.
+      // Manual dropdown picks still take effect immediately (handled
+      // by the onChange callback in mount()); this only runs at the
+      // end of an auto-pass.
+      const keys = Object.keys(ALGOS);
+      algo = keys[(keys.indexOf(algo) + 1) % keys.length];
+      if (selectEl) selectEl.value = algo;
       arr = shuffled(N);
       restart();
       return;
