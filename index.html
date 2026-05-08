@@ -1,576 +1,817 @@
 <!doctype html>
 <html lang="en">
-<head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Brian Chen — backend, AI, and a small corner of the internet</title>
-<meta name="description" content="Personal page of ChangYu (Brian) Chen. CS & Data Science at NYU. Backend systems, agentic AI, functional programming." />
-<meta name="author" content="ChangYu (Brian) Chen" />
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <title>
+            Brian Chen — backend, AI, and a small corner of the internet
+        </title>
+        <meta
+            name="description"
+            content="Personal page of ChangYu (Brian) Chen. CS & Data Science at NYU. Backend systems, agentic AI, functional programming."
+        />
+        <meta name="author" content="ChangYu (Brian) Chen" />
 
-<!-- Open Graph -->
-<meta property="og:type" content="website" />
-<meta property="og:url" content="https://shrimpforfree.github.io/" />
-<meta property="og:title" content="Brian Chen — Software Engineer" />
-<meta property="og:description" content="CS & Data Science at NYU. Backend systems, agentic AI, functional programming." />
+        <!-- Open Graph -->
+        <meta property="og:type" content="website" />
+        <meta property="og:url" content="https://shrimpforfree.github.io/" />
+        <meta property="og:title" content="Brian Chen — Software Engineer" />
+        <meta
+            property="og:description"
+            content="CS & Data Science at NYU. Backend systems, agentic AI, functional programming."
+        />
 
-<!-- Two faces — italic serif for display, mono for everything else.
+        <!-- Two faces — italic serif for display, mono for everything else.
      This contrast is doing most of the design work. -->
-<link rel="preconnect" href="https://fonts.googleapis.com" />
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=JetBrains+Mono:wght@300;400;500&display=swap" rel="stylesheet" />
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+        <link
+            href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=JetBrains+Mono:wght@300;400;500&display=swap"
+            rel="stylesheet"
+        />
 
-<style>
-  /* ----------------------------------------------------------------
+        <style>
+            /* ----------------------------------------------------------------
      Design tokens. Centralizing colors here means the whole palette
      swaps by editing one block. The accent is steel-blue instead of
      burnt orange to set this page apart from Anish's.
   ---------------------------------------------------------------- */
-  :root {
-    --bg:        #f3efe6;             /* warm paper */
-    --bg-2:      #ece6d6;
-    --ink:       #1c1f24;             /* near-black with a hint of blue */
-    --muted:     #807a70;
-    --hairline:  rgba(28, 31, 36, 0.10);
-    --faint:     rgba(28, 31, 36, 0.18);
-    --accent:    #2f6aa0;             /* steel blue */
-    --life-color: rgba(47, 106, 160, 0.80);
-  }
+            :root {
+                --bg: #f3efe6; /* warm paper */
+                --bg-2: #ece6d6;
+                --ink: #1c1f24; /* near-black with a hint of blue */
+                --muted: #807a70;
+                --hairline: rgba(28, 31, 36, 0.1);
+                --faint: rgba(28, 31, 36, 0.18);
+                --accent: #2f6aa0; /* steel blue */
+                --life-color: rgba(47, 106, 160, 0.8);
+            }
 
-  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-  html { scroll-behavior: smooth; }
+            *,
+            *::before,
+            *::after {
+                box-sizing: border-box;
+                margin: 0;
+                padding: 0;
+            }
+            html {
+                scroll-behavior: smooth;
+            }
 
-  body {
-    background: var(--bg);
-    color: var(--ink);
-    font-family: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
-    font-size: 13px;
-    line-height: 1.65;
-    -webkit-font-smoothing: antialiased;
-    text-rendering: optimizeLegibility;
-    min-height: 100vh;
-    overflow-x: hidden;
-    position: relative;
-  }
+            body {
+                background: var(--bg);
+                color: var(--ink);
+                font-family:
+                    "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo,
+                    monospace;
+                font-size: 13px;
+                line-height: 1.65;
+                -webkit-font-smoothing: antialiased;
+                text-rendering: optimizeLegibility;
+                min-height: 100vh;
+                overflow-x: hidden;
+                position: relative;
+            }
 
-  /* Paper grain. An SVG <feTurbulence> noise filter at low opacity,
+            /* Paper grain. An SVG <feTurbulence> noise filter at low opacity,
      mix-blend-mode: multiply darkens the bg slightly with the noise.
      This is the single biggest "feel" upgrade per byte spent. */
-  body::before {
-    content: "";
-    position: fixed;
-    inset: 0;
-    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='220' height='220'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 0.55 0'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>");
-    background-size: 220px 220px;
-    opacity: 0.045;
-    pointer-events: none;
-    mix-blend-mode: multiply;
-    z-index: 3;
-  }
+            body::before {
+                content: "";
+                position: fixed;
+                inset: 0;
+                background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='220' height='220'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 0.55 0'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>");
+                background-size: 220px 220px;
+                opacity: 0.045;
+                pointer-events: none;
+                mix-blend-mode: multiply;
+                z-index: 3;
+            }
 
-  /* ----------------------------------------------------------------
+            /* ----------------------------------------------------------------
      The Conway's Game of Life canvas in the right margin.
      position: absolute so it scrolls with the page (not fixed).
      pointer-events: auto so you can click cells to toggle them.
   ---------------------------------------------------------------- */
-  /* ----------------------------------------------------------------
+            /* ----------------------------------------------------------------
      Widgets — gutter ornaments. Each widget is a self-contained
      module under /widgets that builds its own DOM and animates.
      Layout: a column with optional [select], canvas, label, controls.
   ---------------------------------------------------------------- */
-  .widget {
-    position: absolute;
-    z-index: 1;
-    pointer-events: auto;
-    user-select: none;
-  }
-  .widget canvas { display: block; cursor: crosshair; touch-action: none; }
+            .widget {
+                position: absolute;
+                z-index: 1;
+                pointer-events: auto;
+                user-select: none;
+            }
+            .widget canvas {
+                display: block;
+                cursor: crosshair;
+                touch-action: none;
+            }
 
-  /* Select drops the native chrome so it sits next to the [ shuffle ]
+            /* Select drops the native chrome so it sits next to the [ shuffle ]
      style buttons without a clashing chevron + border. The chevron
      comes back as an inline SVG background tinted to --muted. */
-  .widget-select {
-    appearance: none;
-    -webkit-appearance: none;
-    -moz-appearance: none;
-    margin-top: 8px;
-    background: transparent;
-    border: none;
-    color: var(--muted);
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 9.5px;
-    letter-spacing: 0.16em;
-    text-transform: uppercase;
-    padding: 0 14px 0 0;
-    cursor: pointer;
-    opacity: 0.75;
-    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='8' height='5' viewBox='0 0 8 5'><path fill='none' stroke='%23807a70' stroke-width='0.9' stroke-linecap='round' stroke-linejoin='round' d='M1 1l3 3 3-3'/></svg>");
-    background-repeat: no-repeat;
-    background-position: right center;
-    background-size: 8px 5px;
-    transition: color 0.2s, opacity 0.2s;
-  }
-  .widget-select:hover  { color: var(--ink); opacity: 1; }
-  .widget-select:focus  { outline: none; color: var(--accent); opacity: 1; }
+            .widget-select {
+                appearance: none;
+                -webkit-appearance: none;
+                -moz-appearance: none;
+                margin-top: 8px;
+                background: transparent;
+                border: none;
+                color: var(--muted);
+                font-family: "JetBrains Mono", monospace;
+                font-size: 9.5px;
+                letter-spacing: 0.16em;
+                text-transform: uppercase;
+                padding: 0 14px 0 0;
+                cursor: pointer;
+                opacity: 0.75;
+                background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='8' height='5' viewBox='0 0 8 5'><path fill='none' stroke='%23807a70' stroke-width='0.9' stroke-linecap='round' stroke-linejoin='round' d='M1 1l3 3 3-3'/></svg>");
+                background-repeat: no-repeat;
+                background-position: right center;
+                background-size: 8px 5px;
+                transition:
+                    color 0.2s,
+                    opacity 0.2s;
+            }
+            .widget-select:hover {
+                color: var(--ink);
+                opacity: 1;
+            }
+            .widget-select:focus {
+                outline: none;
+                color: var(--accent);
+                opacity: 1;
+            }
 
-  .widget-label {
-    margin-top: 6px;
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 9.5px;
-    letter-spacing: 0.16em;
-    text-transform: uppercase;
-    color: var(--muted);
-    opacity: 0.7;
-    pointer-events: none;
-    white-space: nowrap;
-  }
+            .widget-label {
+                margin-top: 6px;
+                font-family: "JetBrains Mono", monospace;
+                font-size: 9.5px;
+                letter-spacing: 0.16em;
+                text-transform: uppercase;
+                color: var(--muted);
+                opacity: 0.7;
+                pointer-events: none;
+                white-space: nowrap;
+            }
 
-  .widget-controls {
-    margin-top: 8px;
-    display: flex;
-    gap: 14px;
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 9.5px;
-    letter-spacing: 0.16em;
-    text-transform: uppercase;
-    color: var(--muted);
-  }
-  .widget-btn {
-    background: none;
-    border: none;
-    color: var(--muted);
-    cursor: pointer;
-    padding: 0;
-    font: inherit;
-    letter-spacing: inherit;
-    text-transform: inherit;
-    opacity: 0.75;
-    transition: color 0.2s, opacity 0.2s;
-  }
-  .widget-btn:hover { color: var(--ink); opacity: 1; }
+            .widget-controls {
+                margin-top: 8px;
+                display: flex;
+                gap: 14px;
+                font-family: "JetBrains Mono", monospace;
+                font-size: 9.5px;
+                letter-spacing: 0.16em;
+                text-transform: uppercase;
+                color: var(--muted);
+            }
+            .widget-btn {
+                background: none;
+                border: none;
+                color: var(--muted);
+                cursor: pointer;
+                padding: 0;
+                font: inherit;
+                letter-spacing: inherit;
+                text-transform: inherit;
+                opacity: 0.75;
+                transition:
+                    color 0.2s,
+                    opacity 0.2s;
+            }
+            .widget-btn:hover {
+                color: var(--ink);
+                opacity: 1;
+            }
 
-  /* No gutter to hold widgets on narrow viewports. */
-  @media (max-width: 1100px) {
-    .widget { display: none !important; }
-  }
+            /* No gutter to hold widgets on narrow viewports. */
+            @media (max-width: 1100px) {
+                .widget {
+                    display: none !important;
+                }
+            }
 
-  /* ----------------------------------------------------------------
+            /* ----------------------------------------------------------------
      Main column. Narrow on purpose — readable line length.
      z-index above the noise/canvas layers so text is always crisp.
   ---------------------------------------------------------------- */
-  main {
-    position: relative;
-    z-index: 10;
-    max-width: 720px;
-    margin: 0 auto;
-    padding: 14vh 28px 8vh;
-  }
+            main {
+                position: relative;
+                z-index: 10;
+                max-width: 720px;
+                margin: 0 auto;
+                padding: 14vh 28px 8vh;
+            }
 
-  header { margin-bottom: 96px; }
+            header {
+                margin-bottom: 96px;
+            }
 
-  /* The small caps eyebrow with a pulsing dot — newspaper-meta flavor. */
-  .eyebrow {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    font-size: 10.5px;
-    letter-spacing: 0.22em;
-    text-transform: uppercase;
-    color: var(--muted);
-    margin-bottom: 36px;
-  }
-  .dot {
-    width: 6px; height: 6px;
-    border-radius: 50%;
-    background: var(--accent);
-    display: inline-block;
-    box-shadow: 0 0 0 0 rgba(47, 106, 160, 0.45);
-    animation: pulse 2.6s ease-in-out infinite;
-  }
-  @keyframes pulse {
-    0%, 100% { box-shadow: 0 0 0 0 rgba(47, 106, 160, 0.40); opacity: 0.85; }
-    50%      { box-shadow: 0 0 0 6px rgba(47, 106, 160, 0);    opacity: 1;    }
-  }
+            /* The small caps eyebrow with a pulsing dot — newspaper-meta flavor. */
+            .eyebrow {
+                display: flex;
+                align-items: center;
+                gap: 10px;
+                font-size: 10.5px;
+                letter-spacing: 0.22em;
+                text-transform: uppercase;
+                color: var(--muted);
+                margin-bottom: 36px;
+            }
+            .dot {
+                width: 6px;
+                height: 6px;
+                border-radius: 50%;
+                background: var(--accent);
+                display: inline-block;
+                box-shadow: 0 0 0 0 rgba(47, 106, 160, 0.45);
+                animation: pulse 2.6s ease-in-out infinite;
+            }
+            @keyframes pulse {
+                0%,
+                100% {
+                    box-shadow: 0 0 0 0 rgba(47, 106, 160, 0.4);
+                    opacity: 0.85;
+                }
+                50% {
+                    box-shadow: 0 0 0 6px rgba(47, 106, 160, 0);
+                    opacity: 1;
+                }
+            }
 
-  /* The big move: italic serif name. Family name in italic + accent
+            /* The big move: italic serif name. Family name in italic + accent
      gives it a signature feel without a logo. clamp() keeps it sane
      across viewports. */
-  h1 {
-    font-family: 'Instrument Serif', 'Times New Roman', serif;
-    font-weight: 400;
-    font-size: clamp(60px, 11vw, 124px);
-    line-height: 0.9;
-    letter-spacing: -0.025em;
-    margin-bottom: 36px;
-  }
-  h1 .it    { font-style: italic; color: var(--accent); }
-  h1 .punct { color: var(--muted); font-style: normal; }
+            h1 {
+                font-family: "Instrument Serif", "Times New Roman", serif;
+                font-weight: 400;
+                font-size: clamp(60px, 11vw, 124px);
+                line-height: 0.9;
+                letter-spacing: -0.025em;
+                margin-bottom: 36px;
+            }
+            h1 .it {
+                font-style: italic;
+                color: var(--accent);
+            }
+            h1 .punct {
+                color: var(--muted);
+                font-style: normal;
+            }
+            h1 .nick {
+                font-style: italic;
+                color: var(--muted);
+                font-size: 0.42em;
+                letter-spacing: 0.02em;
+                vertical-align: baseline;
+                margin-left: 0.18em;
+            }
 
-  .tagline {
-    font-family: 'Instrument Serif', serif;
-    font-style: italic;
-    font-size: 23px;
-    line-height: 1.45;
-    color: var(--ink);
-    max-width: 480px;
-  }
+            .tagline {
+                font-family: "Instrument Serif", serif;
+                font-style: italic;
+                font-size: 23px;
+                line-height: 1.45;
+                color: var(--ink);
+                max-width: 480px;
+            }
 
-  section { margin-bottom: 80px; }
+            section {
+                margin-bottom: 80px;
+            }
 
-  .bio { max-width: 540px; }
-  .bio p {
-    font-size: 13px;
-    line-height: 1.8;
-    margin-bottom: 16px;
-  }
-  .bio p:last-child { margin-bottom: 0; }
+            .bio {
+                max-width: 540px;
+            }
+            .bio p {
+                font-size: 13px;
+                line-height: 1.8;
+                margin-bottom: 16px;
+            }
+            .bio p:last-child {
+                margin-bottom: 0;
+            }
 
-  /* Section headings: tiny, all-caps, hairline rule below.
+            /* Section headings: tiny, all-caps, hairline rule below.
      The roman numeral on the right is a small typographic flourish. */
-  h2 {
-    font-size: 10px;
-    font-weight: 500;
-    letter-spacing: 0.24em;
-    text-transform: uppercase;
-    color: var(--muted);
-    margin-bottom: 22px;
-    padding-bottom: 14px;
-    border-bottom: 1px solid var(--hairline);
-    display: flex;
-    justify-content: space-between;
-    align-items: baseline;
-  }
-  h2 .num {
-    font-family: 'Instrument Serif', serif;
-    font-style: italic;
-    font-size: 14px;
-    letter-spacing: 0;
-    text-transform: none;
-    color: var(--muted);
-    opacity: 0.7;
-  }
+            h2 {
+                font-size: 10px;
+                font-weight: 500;
+                letter-spacing: 0.24em;
+                text-transform: uppercase;
+                color: var(--muted);
+                margin-bottom: 22px;
+                padding-bottom: 14px;
+                border-bottom: 1px solid var(--hairline);
+                display: flex;
+                justify-content: space-between;
+                align-items: baseline;
+            }
+            h2 .num {
+                font-family: "Instrument Serif", serif;
+                font-style: italic;
+                font-size: 14px;
+                letter-spacing: 0;
+                text-transform: none;
+                color: var(--muted);
+                opacity: 0.7;
+            }
 
-  /* Each entry is a 3-column grid: year | title+detail | arrow.
+            /* Each entry is a 3-column grid: year | title+detail | arrow.
      Same shape used for work and projects — consistency = rhythm. */
-  .entry {
-    display: grid;
-    grid-template-columns: 110px 1fr 24px;
-    gap: 28px;
-    padding: 20px 0;
-    border-bottom: 1px solid rgba(28, 31, 36, 0.05);
-    align-items: baseline;
-    transition: padding 0.25s ease;
-  }
-  .entry:last-child { border-bottom: none; }
-  .entry .arrow {
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 12px;
-    color: var(--faint);
-    text-align: right;
-    transition: transform 0.25s ease, color 0.25s ease;
-  }
-  .entry:hover .arrow { transform: translateX(4px); color: var(--accent); }
+            .entry {
+                display: grid;
+                grid-template-columns: 110px 1fr 24px;
+                gap: 28px;
+                padding: 20px 0;
+                border-bottom: 1px solid rgba(28, 31, 36, 0.05);
+                align-items: baseline;
+                transition: padding 0.25s ease;
+            }
+            .entry:last-child {
+                border-bottom: none;
+            }
+            .entry .arrow {
+                font-family: "JetBrains Mono", monospace;
+                font-size: 12px;
+                color: var(--faint);
+                text-align: right;
+                transition:
+                    transform 0.25s ease,
+                    color 0.25s ease;
+            }
+            .entry:hover .arrow {
+                transform: translateX(4px);
+                color: var(--accent);
+            }
 
-  .entry-year {
-    font-size: 11px;
-    color: var(--muted);
-    letter-spacing: 0.04em;
-    white-space: nowrap;
-  }
+            .entry-year {
+                font-size: 11px;
+                color: var(--muted);
+                letter-spacing: 0.04em;
+                white-space: nowrap;
+            }
 
-  .entry-title {
-    font-family: 'Instrument Serif', serif;
-    font-size: 22px;
-    line-height: 1.2;
-    margin-bottom: 4px;
-    font-weight: 400;
-  }
-  .entry-title a { border-bottom: none; }
-  .entry-title a:hover { color: var(--accent); }
+            .entry-title {
+                font-family: "Instrument Serif", serif;
+                font-size: 22px;
+                line-height: 1.2;
+                margin-bottom: 4px;
+                font-weight: 400;
+            }
+            .entry-title a {
+                border-bottom: none;
+            }
+            .entry-title a:hover {
+                color: var(--accent);
+            }
 
-  .entry-detail {
-    font-size: 12px;
-    color: var(--muted);
-    line-height: 1.55;
-  }
+            .entry-detail {
+                font-size: 12px;
+                color: var(--muted);
+                line-height: 1.55;
+            }
 
-  .entry-tags {
-    margin-top: 8px;
-    font-size: 10.5px;
-    letter-spacing: 0.08em;
-    color: var(--muted);
-    opacity: 0.85;
-  }
+            .entry-tags {
+                margin-top: 8px;
+                font-size: 10.5px;
+                letter-spacing: 0.08em;
+                color: var(--muted);
+                opacity: 0.85;
+            }
 
-  a {
-    color: inherit;
-    text-decoration: none;
-    border-bottom: 1px solid var(--faint);
-    transition: color 0.2s, border-color 0.2s;
-  }
-  a:hover { color: var(--accent); border-bottom-color: var(--accent); }
+            a {
+                color: inherit;
+                text-decoration: none;
+                border-bottom: 1px solid var(--faint);
+                transition:
+                    color 0.2s,
+                    border-color 0.2s;
+            }
+            a:hover {
+                color: var(--accent);
+                border-bottom-color: var(--accent);
+            }
 
-  /* "Currently" block — labeled list with arrow bullets in the accent. */
-  .now {
-    display: grid;
-    grid-template-columns: 110px 1fr;
-    gap: 28px;
-    padding: 4px 0 0;
-    font-size: 13px;
-    line-height: 1.75;
-  }
-  .now .label { font-size: 11px; color: var(--muted); letter-spacing: 0.04em; }
-  .now ul { list-style: none; }
-  .now li { padding: 4px 0; color: var(--ink); }
-  .now li::before {
-    content: "→ ";
-    color: var(--accent);
-    font-family: 'JetBrains Mono', monospace;
-    margin-right: 4px;
-  }
+            /* "Currently" block — labeled list with arrow bullets in the accent. */
+            .now {
+                display: grid;
+                grid-template-columns: 110px 1fr;
+                gap: 28px;
+                padding: 4px 0 0;
+                font-size: 13px;
+                line-height: 1.75;
+            }
+            .now .label {
+                font-size: 11px;
+                color: var(--muted);
+                letter-spacing: 0.04em;
+            }
+            .now ul {
+                list-style: none;
+            }
+            .now li {
+                padding: 4px 0;
+                color: var(--ink);
+            }
+            .now li::before {
+                content: "→ ";
+                color: var(--accent);
+                font-family: "JetBrains Mono", monospace;
+                margin-right: 4px;
+            }
 
-  footer {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    font-size: 11px;
-    color: var(--muted);
-    padding: 32px 0 0;
-    border-top: 1px solid var(--hairline);
-    letter-spacing: 0.04em;
-    flex-wrap: wrap;
-    gap: 12px;
-  }
-  footer .links { display: flex; gap: 18px; }
-  footer a { border-bottom-color: rgba(28, 31, 36, 0.22); }
+            footer {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                font-size: 11px;
+                color: var(--muted);
+                padding: 32px 0 0;
+                border-top: 1px solid var(--hairline);
+                letter-spacing: 0.04em;
+                flex-wrap: wrap;
+                gap: 12px;
+            }
+            footer .links {
+                display: flex;
+                gap: 18px;
+            }
+            footer a {
+                border-bottom-color: rgba(28, 31, 36, 0.22);
+            }
 
-  /* Floating signature in bottom-right (hidden on mobile). */
-  .sig {
-    position: fixed;
-    right: 24px;
-    bottom: 18px;
-    z-index: 11;
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 9px;
-    color: var(--muted);
-    letter-spacing: 0.18em;
-    text-transform: uppercase;
-    pointer-events: none;
-    opacity: 0.7;
-  }
+            /* Floating signature in bottom-right (hidden on mobile). */
+            .sig {
+                position: fixed;
+                right: 24px;
+                bottom: 18px;
+                z-index: 11;
+                font-family: "JetBrains Mono", monospace;
+                font-size: 9px;
+                color: var(--muted);
+                letter-spacing: 0.18em;
+                text-transform: uppercase;
+                pointer-events: none;
+                opacity: 0.7;
+            }
 
-  /* Reveal on load — stagger via .d1..d6 delay classes.
+            /* Reveal on load — stagger via .d1..d6 delay classes.
      Small thing, big polish. */
-  .reveal {
-    opacity: 0;
-    transform: translateY(8px);
-    animation: rise 0.9s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-  }
-  @keyframes rise {
-    to { opacity: 1; transform: translateY(0); }
-  }
-  .d1 { animation-delay: 0.05s; }
-  .d2 { animation-delay: 0.20s; }
-  .d3 { animation-delay: 0.35s; }
-  .d4 { animation-delay: 0.55s; }
-  .d5 { animation-delay: 0.75s; }
-  .d6 { animation-delay: 0.95s; }
+            .reveal {
+                opacity: 0;
+                transform: translateY(8px);
+                animation: rise 0.9s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+            }
+            @keyframes rise {
+                to {
+                    opacity: 1;
+                    transform: translateY(0);
+                }
+            }
+            .d1 {
+                animation-delay: 0.05s;
+            }
+            .d2 {
+                animation-delay: 0.2s;
+            }
+            .d3 {
+                animation-delay: 0.35s;
+            }
+            .d4 {
+                animation-delay: 0.55s;
+            }
+            .d5 {
+                animation-delay: 0.75s;
+            }
+            .d6 {
+                animation-delay: 0.95s;
+            }
 
-  ::selection { background: var(--accent); color: var(--bg); }
+            ::selection {
+                background: var(--accent);
+                color: var(--bg);
+            }
 
-  @media (max-width: 720px) {
-    main { padding: 10vh 22px 8vh; }
-    h1 { font-size: 56px; }
-    .tagline { font-size: 19px; }
-    .entry { grid-template-columns: 70px 1fr 18px; gap: 14px; }
-    .now { grid-template-columns: 70px 1fr; gap: 14px; }
-    .sig { display: none; }
-  }
+            @media (max-width: 720px) {
+                main {
+                    padding: 10vh 22px 8vh;
+                }
+                h1 {
+                    font-size: 56px;
+                }
+                .tagline {
+                    font-size: 19px;
+                }
+                .entry {
+                    grid-template-columns: 70px 1fr 18px;
+                    gap: 14px;
+                }
+                .now {
+                    grid-template-columns: 70px 1fr;
+                    gap: 14px;
+                }
+                .sig {
+                    display: none;
+                }
+            }
 
-  @media (prefers-reduced-motion: reduce) {
-    .reveal { animation: none; opacity: 1; transform: none; }
-  }
-</style>
-</head>
-<body>
-  <main>
-    <header>
-      <div class="eyebrow reveal d1">
-        <span class="dot"></span>
-        <span id="loc">40.73° N · 73.99° W</span>
-        &nbsp;/&nbsp;
-        <span id="time">--:--</span>
-      </div>
-      <h1 class="reveal d2">Brian<br /><span class="it">Chen</span><span class="punct">.</span></h1>
-      <p class="tagline reveal d3">Backend engineer. I like systems that scale, models that cluster, and the small space where the two meet — mostly written in Rust or Scala.</p>
-    </header>
+            @media (prefers-reduced-motion: reduce) {
+                .reveal {
+                    animation: none;
+                    opacity: 1;
+                    transform: none;
+                }
+            }
+        </style>
+    </head>
+    <body>
+        <main>
+            <header>
+                <div class="eyebrow reveal d1">
+                    <span class="dot"></span>
+                    <span id="loc">40.73° N · 73.99° W</span>
+                    &nbsp;/&nbsp;
+                    <span id="time">--:--</span>
+                </div>
+                <h1 class="reveal d2">
+                    ChangYu<span class="nick">(Brian)</span><br /><span class="it">Chen</span
+                    ><span class="punct">.</span>
+                </h1>
+                <p class="tagline reveal d3">
+                    Backend engineer. I like systems that scale, models that
+                    cluster, and the small space where the two meet.
+                </p>
+            </header>
 
-    <section class="bio reveal d4">
-      <p>NYU CS &amp; Data Science, '26. I spend most of my time on backend infrastructure — Scala, Akka HTTP, Postgres, lately a lot of Rust — and the rest of it on agentic AI and functional-programming side quests.</p>
-    </section>
+            <section class="bio reveal d4">
+                <p>
+                    NYU CS &amp; Data Science, '26. I spend most of my time on
+                    backend infrastructure — Scala, Akka HTTP, Postgres, lately
+                    a lot of Rust — and the rest of it on agentic AI and
+                    functional-programming side quests.
+                </p>
+            </section>
 
-    <section class="reveal d5">
-      <h2><span>Selected work</span><span class="num">i.</span></h2>
+            <section class="reveal d5">
+                <h2><span>Selected work</span><span class="num">i.</span></h2>
 
-      <a class="entry" href="#">
-        <div class="entry-year">2025 — now</div>
-        <div>
-          <div class="entry-title">Hopscotch Labs · BeeBot</div>
-          <div class="entry-detail">Backend features in Scala/Akka HTTP + Postgres. Admin tooling — search, RBAC, event dedup, API logs. Built an event personalization layer with vector embeddings + geo + recency, and ported geofence checks onto a quadtree.</div>
-          <div class="entry-tags">scala · akka · postgres · embeddings · ios</div>
-        </div>
-        <div class="arrow">→</div>
-      </a>
+                <a class="entry" href="#">
+                    <div class="entry-year">2025 — now</div>
+                    <div>
+                        <div class="entry-title">Hopscotch Labs · BeeBot</div>
+                        <div class="entry-detail">
+                            Backend features in Scala/Akka HTTP + Postgres.
+                            Admin tooling — search, RBAC, event dedup, API logs.
+                            Built an event personalization layer with vector
+                            embeddings + geo + recency, and ported geofence
+                            checks onto a quadtree.
+                        </div>
+                        <div class="entry-tags">
+                            scala · akka · postgres · embeddings · ios
+                        </div>
+                    </div>
+                    <div class="arrow">→</div>
+                </a>
 
-      <a class="entry" href="#" target="_blank" rel="noopener">
-        <div class="entry-year">2024</div>
-        <div>
-          <div class="entry-title">Qing-Guang Clinic</div>
-          <div class="entry-detail">Full-stack site — concept through deploy. Hosting, DNS, SEO. Stitched HTML, Canva assets, and Google Sites into a low-maintenance front door for a small clinic.</div>
-          <div class="entry-tags">html · seo · dns</div>
-        </div>
-        <div class="arrow">→</div>
-      </a>
+                <a class="entry" href="#" target="_blank" rel="noopener">
+                    <div class="entry-year">2024</div>
+                    <div>
+                        <div class="entry-title">Qing-Guang Clinic</div>
+                        <div class="entry-detail">
+                            Full-stack site — concept through deploy. Hosting,
+                            DNS, SEO. Stitched HTML, Canva assets, and Google
+                            Sites into a low-maintenance front door for a small
+                            clinic.
+                        </div>
+                        <div class="entry-tags">html · seo · dns</div>
+                    </div>
+                    <div class="arrow">→</div>
+                </a>
 
-      <a class="entry" href="#" target="_blank" rel="noopener">
-        <div class="entry-year">2024</div>
-        <div>
-          <div class="entry-title">Shanhua Elementary · Tech Assistant</div>
-          <div class="entry-detail">Migrated school storage to a backed-up cloud setup, debugged the network, and kept curriculum tech alive for a building full of kids and teachers.</div>
-          <div class="entry-tags">infra · ops</div>
-        </div>
-        <div class="arrow">→</div>
-      </a>
+                <a class="entry" href="#" target="_blank" rel="noopener">
+                    <div class="entry-year">2024</div>
+                    <div>
+                        <div class="entry-title">
+                            Shanhua Elementary · Tech Assistant
+                        </div>
+                        <div class="entry-detail">
+                            Migrated school storage to a backed-up cloud setup,
+                            debugged the network, and kept curriculum tech alive
+                            for a building full of kids and teachers.
+                        </div>
+                        <div class="entry-tags">infra · ops</div>
+                    </div>
+                    <div class="arrow">→</div>
+                </a>
 
-      <a class="entry" href="#" target="_blank" rel="noopener">
-        <div class="entry-year">2023</div>
-        <div>
-          <div class="entry-title">Luyin Technology · Product Testing</div>
-          <div class="entry-detail">Sales + customer-feedback analysis. Built dashboards for product teams and filed bug reports against pre-release builds.</div>
-          <div class="entry-tags">analytics · qa</div>
-        </div>
-        <div class="arrow">→</div>
-      </a>
-    </section>
+                <a class="entry" href="#" target="_blank" rel="noopener">
+                    <div class="entry-year">2023</div>
+                    <div>
+                        <div class="entry-title">
+                            Luyin Technology · Product Testing
+                        </div>
+                        <div class="entry-detail">
+                            Sales + customer-feedback analysis. Built dashboards
+                            for product teams and filed bug reports against
+                            pre-release builds.
+                        </div>
+                        <div class="entry-tags">analytics · qa</div>
+                    </div>
+                    <div class="arrow">→</div>
+                </a>
+            </section>
 
-    <section class="reveal d5">
-      <h2><span>Side projects</span><span class="num">ii.</span></h2>
+            <section class="reveal d5">
+                <h2><span>Side projects</span><span class="num">ii.</span></h2>
 
-      <a class="entry" href="#" target="_blank" rel="noopener">
-        <div class="entry-year">scala</div>
-        <div>
-          <div class="entry-title">Chess engine</div>
-          <div class="entry-detail">Bitboard board representation, alpha-beta with quiescence, transposition table. A long-running excuse to push Scala's type system at search code.</div>
-          <div class="entry-tags">scala · search · bitboards</div>
-        </div>
-        <div class="arrow">→</div>
-      </a>
+                <a class="entry" href="#" target="_blank" rel="noopener">
+                    <div class="entry-year">scala</div>
+                    <div>
+                        <div class="entry-title">Chess engine</div>
+                        <div class="entry-detail">
+                            Bitboard board representation, alpha-beta with
+                            quiescence, transposition table. A long-running
+                            excuse to push Scala's type system at search code.
+                        </div>
+                        <div class="entry-tags">scala · search · bitboards</div>
+                    </div>
+                    <div class="arrow">→</div>
+                </a>
 
-      <a class="entry" href="#" target="_blank" rel="noopener">
-        <div class="entry-year">rust</div>
-        <div>
-          <div class="entry-title">In-memory database</div>
-          <div class="entry-detail">Redis-style key/value store. Async TCP server, custom B-tree index, write-ahead log for crash recovery. Built end-to-end to learn the storage stack.</div>
-          <div class="entry-tags">rust · storage · async · wal</div>
-        </div>
-        <div class="arrow">→</div>
-      </a>
+                <a class="entry" href="#" target="_blank" rel="noopener">
+                    <div class="entry-year">rust</div>
+                    <div>
+                        <div class="entry-title">In-memory database</div>
+                        <div class="entry-detail">
+                            Redis-style key/value store. Async TCP server,
+                            custom B-tree index, write-ahead log for crash
+                            recovery. Built end-to-end to learn the storage
+                            stack.
+                        </div>
+                        <div class="entry-tags">
+                            rust · storage · async · wal
+                        </div>
+                    </div>
+                    <div class="arrow">→</div>
+                </a>
 
-      <a class="entry" href="#" target="_blank" rel="noopener">
-        <div class="entry-year">scala</div>
-        <div>
-          <div class="entry-title">Scala AST linter</div>
-          <div class="entry-detail">Scalameta-based static analysis — flags unused imports, shadowed names, suspicious implicits, and a few project-specific smells. Written as a CLI you can run pre-commit.</div>
-          <div class="entry-tags">scala · scalameta · static-analysis</div>
-        </div>
-        <div class="arrow">→</div>
-      </a>
+                <a class="entry" href="#" target="_blank" rel="noopener">
+                    <div class="entry-year">scala</div>
+                    <div>
+                        <div class="entry-title">Scala AST linter</div>
+                        <div class="entry-detail">
+                            Scalameta-based static analysis — flags unused
+                            imports, shadowed names, suspicious implicits, and a
+                            few project-specific smells. Written as a CLI you
+                            can run pre-commit.
+                        </div>
+                        <div class="entry-tags">
+                            scala · scalameta · static-analysis
+                        </div>
+                    </div>
+                    <div class="arrow">→</div>
+                </a>
 
-      <a class="entry" href="#" target="_blank" rel="noopener">
-        <div class="entry-year">rust</div>
-        <div>
-          <div class="entry-title">Brainfuck interpreter + compiler</div>
-          <div class="entry-detail">Tape-based interpreter plus an x86_64 codegen backend. Tiny but the full pipeline — parse → IR → optimise (loop folding, run-length encoding) → emit. Excuse to play with compilers.</div>
-          <div class="entry-tags">rust · compilers · codegen</div>
-        </div>
-        <div class="arrow">→</div>
-      </a>
+                <a class="entry" href="#" target="_blank" rel="noopener">
+                    <div class="entry-year">rust</div>
+                    <div>
+                        <div class="entry-title">
+                            Brainfuck interpreter + compiler
+                        </div>
+                        <div class="entry-detail">
+                            Tape-based interpreter plus an x86_64 codegen
+                            backend. Tiny but the full pipeline — parse → IR →
+                            optimise (loop folding, run-length encoding) → emit.
+                            Excuse to play with compilers.
+                        </div>
+                        <div class="entry-tags">rust · compilers · codegen</div>
+                    </div>
+                    <div class="arrow">→</div>
+                </a>
 
-      <a class="entry" href="#" target="_blank" rel="noopener">
-        <div class="entry-year">scala</div>
-        <div>
-          <div class="entry-title">Custom Scala libraries</div>
-          <div class="entry-detail">A loose collection of building blocks I keep reaching for: monadic CLI arg parsing, structured event logging, Redis and Postgres connection wrappers, and a server health-check test framework. Most started as "I'd rather write this once" and stuck around.</div>
-          <div class="entry-tags">scala · cli · logging · redis · postgres · testkit</div>
-        </div>
-        <div class="arrow">→</div>
-      </a>
-    </section>
+                <a class="entry" href="#" target="_blank" rel="noopener">
+                    <div class="entry-year">scala</div>
+                    <div>
+                        <div class="entry-title">Custom Scala libraries</div>
+                        <div class="entry-detail">
+                            A loose collection of building blocks I keep
+                            reaching for: monadic CLI arg parsing, structured
+                            event logging, Redis and Postgres connection
+                            wrappers, and a server health-check test framework.
+                            Most started as "I'd rather write this once" and
+                            stuck around.
+                        </div>
+                        <div class="entry-tags">
+                            scala · cli · logging · redis · postgres · testkit
+                        </div>
+                    </div>
+                    <div class="arrow">→</div>
+                </a>
+            </section>
 
-    <section class="reveal d5">
-      <h2><span>Stack &amp; interests</span><span class="num">iii.</span></h2>
+            <section class="reveal d5">
+                <h2>
+                    <span>Stack &amp; interests</span
+                    ><span class="num">iii.</span>
+                </h2>
 
-      <div class="now">
-        <div class="label">languages</div>
-        <ul><li>Rust &amp; Scala (favorites), Swift, Java, Python, SQL</li></ul>
-      </div>
-      <div class="now">
-        <div class="label">tools</div>
-        <ul><li>Akka HTTP, React, Docker, AWS, UiPath</li></ul>
-      </div>
-      <div class="now">
-        <div class="label">into</div>
-        <ul>
-          <li>backend systems and recommendation infra</li>
-          <li>agentic AI — when an LLM stops being a chatbot and starts being a coworker</li>
-          <li>functional programming — laws over patterns, types over tests</li>
-          <li>learning new languages — there's always one more idiom worth stealing</li>
-        </ul>
-      </div>
-    </section>
+                <div class="now">
+                    <div class="label">languages</div>
+                    <ul>
+                        <li>
+                            Rust &amp; Scala (favorites), Swift, Java, Python,
+                            SQL
+                        </li>
+                    </ul>
+                </div>
+                <div class="now">
+                    <div class="label">tools</div>
+                    <ul>
+                        <li>Akka HTTP, React, Docker, AWS, UiPath</li>
+                    </ul>
+                </div>
+                <div class="now">
+                    <div class="label">into</div>
+                    <ul>
+                        <li>backend systems and recommendation infra</li>
+                        <li>
+                            agentic AI — when an LLM stops being a chatbot and
+                            starts being a coworker
+                        </li>
+                        <li>
+                            functional programming — laws over patterns, types
+                            over tests
+                        </li>
+                        <li>
+                            learning new languages — there's always one more
+                            idiom worth stealing
+                        </li>
+                    </ul>
+                </div>
+            </section>
 
-    <section class="reveal d6">
-      <h2><span>Currently</span><span class="num">iv.</span></h2>
-      <div class="now">
-        <div class="label">writing</div>
-        <ul>
-          <li>Rust — async runtimes, ownership puzzles, the borrow checker as a friend</li>
-          <li>Scala — Akka, FP-ish patterns, type-driven design</li>
-        </ul>
-      </div>
-    </section>
+            <section class="reveal d6">
+                <h2><span>Currently</span><span class="num">iv.</span></h2>
+                <div class="now">
+                    <div class="label">writing</div>
+                    <ul>
+                        <li>
+                            Rust — async runtimes, ownership puzzles, the borrow
+                            checker as a friend
+                        </li>
+                        <li>
+                            Scala — Akka, FP-ish patterns, type-driven design
+                        </li>
+                    </ul>
+                </div>
+            </section>
 
-    <footer class="reveal d6">
-      <div class="links">
-        <a href="mailto:brian@hopscotchlabs.biz">email</a>
-        <a href="https://github.com/shrimpforfree" target="_blank" rel="noopener">github</a>
-        <a href="https://www.linkedin.com/in/brian-chen-07661a267/" target="_blank" rel="noopener">linkedin</a>
-        <a href="resume.pdf" download>resume</a>
-      </div>
-      <div>let's build something together</div>
-    </footer>
-  </main>
+            <footer class="reveal d6">
+                <div class="links">
+                    <a href="mailto:brian@hopscotchlabs.biz">email</a>
+                    <a
+                        href="https://github.com/shrimpforfree"
+                        target="_blank"
+                        rel="noopener"
+                        >github</a
+                    >
+                    <a
+                        href="https://www.linkedin.com/in/brian-chen-07661a267/"
+                        target="_blank"
+                        rel="noopener"
+                        >linkedin</a
+                    >
+                    <a href="resume.pdf" download>resume</a>
+                </div>
+                <div>let's build something together</div>
+            </footer>
+        </main>
 
-  <div class="sig">— b · 2026 ──</div>
+        <div class="sig">— b · 2026 ──</div>
 
-<script>
-/* ============================================================
+        <script>
+            /* ============================================================
    Tiny clock in the eyebrow. Pure cosmetic — feels "live".
 ============================================================ */
-(() => {
-  const el = document.getElementById('time');
-  if (!el) return;
-  function tick() {
-    const now = new Date();
-    const hh = String(now.getHours()).padStart(2, '0');
-    const mm = String(now.getMinutes()).padStart(2, '0');
-    el.textContent = hh + ':' + mm;
-  }
-  tick();
-  setInterval(tick, 30 * 1000);
-})();
-</script>
+            (() => {
+                const el = document.getElementById("time");
+                if (!el) return;
+                function tick() {
+                    const now = new Date();
+                    const hh = String(now.getHours()).padStart(2, "0");
+                    const mm = String(now.getMinutes()).padStart(2, "0");
+                    el.textContent = hh + ":" + mm;
+                }
+                tick();
+                setInterval(tick, 30 * 1000);
+            })();
+        </script>
 
-<!-- ============================================================
+        <!-- ============================================================
      Widget registry. Each widget lives in its own file under
      /widgets and exports a single function. To add a widget:
          import { foo } from './widgets/foo.js';
@@ -585,32 +826,31 @@
          cd brian-portfolio && python3 -m http.server 8000
      then open http://localhost:8000/index-new.html
 ============================================================ -->
-<script type="module">
-  import { life }         from './widgets/life.js';
-  import { sorting }      from './widgets/sorting.js';
-  import { maze }         from './widgets/maze.js';
-  import { fibonacci }    from './widgets/fibonacci.js';
-  import { quadtree }     from './widgets/quadtree.js';
-  import { decisionTree } from './widgets/decision-tree.js';
-  import { hashring }     from './widgets/hashring.js';
-  import { forceGraph }   from './widgets/force-graph.js';
-  import { raft }         from './widgets/raft.js';
+        <script type="module">
+            import { life } from "./widgets/life.js";
+            import { sorting } from "./widgets/sorting.js";
+            import { maze } from "./widgets/maze.js";
+            import { fibonacci } from "./widgets/fibonacci.js";
+            import { quadtree } from "./widgets/quadtree.js";
+            import { decisionTree } from "./widgets/decision-tree.js";
+            import { hashring } from "./widgets/hashring.js";
+            import { forceGraph } from "./widgets/force-graph.js";
+            import { raft } from "./widgets/raft.js";
 
-  // === widgets ===========================================
-  // top = pixels from page top — staggered so the gutters
-  // stay populated as you scroll. Add a line to add a widget;
-  // delete one to remove it.
-  life        ({ side: 'right', top: 60   });   // header
-  sorting     ({ side: 'left',  top: 80   });   // header
-  fibonacci   ({ side: 'right', top: 540  });   // breathing room under life
-  maze        ({ side: 'left',  top: 720  });   // bio → work
-  decisionTree({ side: 'right', top: 1100 });   // mid-work
-  quadtree    ({ side: 'left',  top: 1340 });   // mid-work
-  forceGraph  ({ side: 'right', top: 1660 });   // bottom — interactive
-  hashring    ({ side: 'left',  top: 1900 });   // bottom
-  raft        ({ side: 'right', top: 2240 });   // bottom — backend signature
-  // =======================================================
-</script>
-
-</body>
+            // === widgets ===========================================
+            // top = pixels from page top — staggered so the gutters
+            // stay populated as you scroll. Add a line to add a widget;
+            // delete one to remove it.
+            life({ side: "right", top: 60 }); // header
+            sorting({ side: "left", top: 80 }); // header
+            fibonacci({ side: "right", top: 540 }); // breathing room under life
+            maze({ side: "left", top: 720 }); // bio → work
+            decisionTree({ side: "right", top: 1100 }); // mid-work
+            quadtree({ side: "left", top: 1340 }); // mid-work
+            forceGraph({ side: "right", top: 1660 }); // bottom — interactive
+            hashring({ side: "left", top: 1900 }); // bottom
+            raft({ side: "right", top: 2240 }); // bottom — backend signature
+            // =======================================================
+        </script>
+    </body>
 </html>
