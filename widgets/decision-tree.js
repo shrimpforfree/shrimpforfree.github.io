@@ -221,12 +221,24 @@ export function decisionTree({ side = 'right', top = 1280 } = {}) {
       ctx.fill();
     }
 
-    // Depth label, top-left.
+    // Depth + training accuracy, top-left. Accuracy climbing toward
+    // 100% as depth grows is exactly the "...and now it overfits"
+    // story — at max depth the tree memorizes individual points.
+    let correct = 0;
+    for (const p of points) if (predict(tree, p) === p.cls) correct++;
+    const acc = points.length ? Math.round((correct / points.length) * 100) : 0;
     ctx.fillStyle = 'rgba(47, 106, 160, 0.85)';
     ctx.font = "italic 14px 'Instrument Serif', serif";
     ctx.textAlign = 'left';
     ctx.textBaseline = 'top';
-    ctx.fillText('depth ' + depth, 10, 8);
+    ctx.fillText(`depth ${depth} · acc ${acc}%`, 10, 8);
+  }
+
+  function predict(node, p) {
+    while (node && !node.leaf) {
+      node = (p[node.feature] < node.threshold) ? node.left : node.right;
+    }
+    return node ? node.cls : 0;
   }
 
   function start() { if (!tickId) tickId = setInterval(tick, TICK_MS); }

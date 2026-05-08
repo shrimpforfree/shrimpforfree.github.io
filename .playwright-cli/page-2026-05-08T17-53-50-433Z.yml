@@ -1,0 +1,132 @@
+- generic [active] [ref=e1]:
+  - main [ref=e2]:
+    - generic [ref=e3]:
+      - generic [ref=e4]:
+        - generic [ref=e6]: 40.73° N · 73.99° W
+        - text: /
+        - generic [ref=e7]: 13:53
+      - heading "Brian Chen." [level=1] [ref=e8]:
+        - text: Brian
+        - text: Chen.
+      - paragraph [ref=e9]: Backend engineer. I like systems that scale, models that cluster, and the small space where the two meet — mostly written in Rust or Scala.
+    - paragraph [ref=e11]: NYU CS & Data Science, '26. I spend most of my time on backend infrastructure — Scala, Akka HTTP, Postgres, lately a lot of Rust — and the rest of it on agentic AI and iOS work.
+    - generic [ref=e12]:
+      - heading "Selected work i." [level=2] [ref=e13]:
+        - generic [ref=e14]: Selected work
+        - generic [ref=e15]: i.
+      - link "2025 — now Hopscotch Labs · BeeBot Backend features in Scala/Akka HTTP + Postgres. Admin tooling — search, RBAC, event dedup, API logs. Built an event personalization layer with vector embeddings + geo + recency, and ported geofence checks onto a quadtree. scala · akka · postgres · embeddings · ios →" [ref=e16] [cursor=pointer]:
+        - /url: "#"
+        - generic [ref=e17]: 2025 — now
+        - generic [ref=e18]:
+          - generic [ref=e19]: Hopscotch Labs · BeeBot
+          - generic [ref=e20]: Backend features in Scala/Akka HTTP + Postgres. Admin tooling — search, RBAC, event dedup, API logs. Built an event personalization layer with vector embeddings + geo + recency, and ported geofence checks onto a quadtree.
+          - generic [ref=e21]: scala · akka · postgres · embeddings · ios
+        - generic [ref=e22]: →
+      - link "2024 Qing-Guang Clinic Full-stack site — concept through deploy. Hosting, DNS, SEO. Stitched HTML, Canva assets, and Google Sites into a low-maintenance front door for a small clinic. html · seo · dns →" [ref=e23] [cursor=pointer]:
+        - /url: "#"
+        - generic [ref=e24]: "2024"
+        - generic [ref=e25]:
+          - generic [ref=e26]: Qing-Guang Clinic
+          - generic [ref=e27]: Full-stack site — concept through deploy. Hosting, DNS, SEO. Stitched HTML, Canva assets, and Google Sites into a low-maintenance front door for a small clinic.
+          - generic [ref=e28]: html · seo · dns
+        - generic [ref=e29]: →
+      - link "2024 Shanhua Elementary · Tech Assistant Migrated school storage to a backed-up cloud setup, debugged the network, and kept curriculum tech alive for a building full of kids and teachers. infra · ops →" [ref=e30] [cursor=pointer]:
+        - /url: "#"
+        - generic [ref=e31]: "2024"
+        - generic [ref=e32]:
+          - generic [ref=e33]: Shanhua Elementary · Tech Assistant
+          - generic [ref=e34]: Migrated school storage to a backed-up cloud setup, debugged the network, and kept curriculum tech alive for a building full of kids and teachers.
+          - generic [ref=e35]: infra · ops
+        - generic [ref=e36]: →
+      - link "2023 Luyin Technology · Product Testing Sales + customer-feedback analysis. Built dashboards for product teams and filed bug reports against pre-release builds. analytics · qa →" [ref=e37] [cursor=pointer]:
+        - /url: "#"
+        - generic [ref=e38]: "2023"
+        - generic [ref=e39]:
+          - generic [ref=e40]: Luyin Technology · Product Testing
+          - generic [ref=e41]: Sales + customer-feedback analysis. Built dashboards for product teams and filed bug reports against pre-release builds.
+          - generic [ref=e42]: analytics · qa
+        - generic [ref=e43]: →
+    - generic [ref=e44]:
+      - heading "Stack & interests ii." [level=2] [ref=e45]:
+        - generic [ref=e46]: Stack & interests
+        - generic [ref=e47]: ii.
+      - generic [ref=e48]:
+        - generic [ref=e49]: languages
+        - list [ref=e50]:
+          - listitem [ref=e51]: → Rust & Scala (favorites), Swift, Java, Python, SQL
+      - generic [ref=e52]:
+        - generic [ref=e53]: tools
+        - list [ref=e54]:
+          - listitem [ref=e55]: → Akka HTTP, React, Docker, AWS, UiPath
+      - generic [ref=e56]:
+        - generic [ref=e57]: into
+        - list [ref=e58]:
+          - listitem [ref=e59]: → backend systems and recommendation infra
+          - listitem [ref=e60]: → agentic AI — when an LLM stops being a chatbot and starts being a coworker
+          - listitem [ref=e61]: → iOS — Keychain, Bluetooth, audio routing
+    - generic [ref=e62]:
+      - heading "Currently iii." [level=2] [ref=e63]:
+        - generic [ref=e64]: Currently
+        - generic [ref=e65]: iii.
+      - generic [ref=e66]:
+        - generic [ref=e67]: writing
+        - list [ref=e68]:
+          - listitem [ref=e69]: → Rust — async runtimes, ownership puzzles, the borrow checker as a friend
+          - listitem [ref=e70]: → Scala — Akka, FP-ish patterns, type-driven design
+      - generic [ref=e71]:
+        - generic [ref=e72]: building
+        - list [ref=e73]:
+          - listitem [ref=e74]: → event personalization at Hopscotch Labs
+          - listitem [ref=e75]: → this website (clearly)
+      - generic [ref=e76]:
+        - generic [ref=e77]: reading
+        - list [ref=e78]:
+          - listitem [ref=e79]: → papers on retrieval + ranking, plus the occasional Foucault
+    - generic [ref=e80]:
+      - generic [ref=e81]:
+        - link "email" [ref=e82] [cursor=pointer]:
+          - /url: mailto:brian@hopscotchlabs.biz
+        - link "github" [ref=e83] [cursor=pointer]:
+          - /url: https://github.com/shrimpforfree
+        - link "linkedin" [ref=e84] [cursor=pointer]:
+          - /url: https://www.linkedin.com/in/brian-chen-07661a267/
+        - link "resume" [ref=e85] [cursor=pointer]:
+          - /url: resume.pdf
+      - generic [ref=e86]: let's build something together
+  - generic: — b · 2026 ──
+  - generic [ref=e87]:
+    - generic: // life · click to toggle cells
+    - generic [ref=e89]:
+      - button "[ clear ]" [ref=e90] [cursor=pointer]
+      - button "[ seed ]" [ref=e91] [cursor=pointer]
+  - generic [ref=e92]:
+    - combobox [ref=e94] [cursor=pointer]:
+      - option "bubble" [selected]
+      - option "insertion"
+      - option "selection"
+      - option "merge"
+      - option "quick"
+      - option "heap"
+    - generic: // sort · pick an algorithm
+    - generic [ref=e95]:
+      - button "[ shuffle ]" [ref=e96] [cursor=pointer]
+      - button "[ pause ]" [ref=e97] [cursor=pointer]
+  - generic [ref=e98]:
+    - generic: // maze · bfs solver
+    - button "[ regenerate ]" [ref=e101] [cursor=pointer]
+  - generic [ref=e102]:
+    - generic: // fibonacci heap · auto-cycling
+  - generic [ref=e104]:
+    - generic: // decision tree · depth grows on a loop
+  - generic [ref=e106]:
+    - generic: // quadtree · spatial partition
+  - generic [ref=e108]:
+    - generic: // force graph · drag any node
+    - button "[ shuffle ]" [ref=e111] [cursor=pointer]
+  - generic [ref=e112]:
+    - generic: // consistent hashing · auto-cycling
+  - generic [ref=e114]:
+    - generic: // raft consensus · 5-node cluster
+    - generic [ref=e116]:
+      - button "[ kill leader ]" [ref=e117] [cursor=pointer]
+      - button "[ reset ]" [ref=e118] [cursor=pointer]

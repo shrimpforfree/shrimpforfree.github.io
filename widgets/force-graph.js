@@ -164,9 +164,27 @@ export function forceGraph({ side = 'right', top = 1820 } = {}) {
   function draw() {
     ctx.clearRect(0, 0, W, H);
 
-    ctx.strokeStyle = 'rgba(28, 31, 36, 0.30)';
+    // When a node is focused (hovered or dragged) we want its local
+    // neighborhood to pop. Build a quick "is this neighbor of focus?"
+    // set once per frame so the loops below stay flat.
+    const focus = dragging || hover;
+    const neighbors = new Set();
+    if (focus) {
+      const f = focus.id;
+      for (const [i, j] of edges) {
+        if      (i === f) neighbors.add(j);
+        else if (j === f) neighbors.add(i);
+      }
+    }
+
     ctx.lineWidth = 1;
     for (const [i, j] of edges) {
+      const incident = focus && (nodes[i] === focus || nodes[j] === focus);
+      ctx.strokeStyle = incident
+        ? 'rgba(47, 106, 160, 0.85)'                           // accent
+        : (focus ? 'rgba(28, 31, 36, 0.10)'                    // dimmed
+                 : 'rgba(28, 31, 36, 0.30)');                  // default
+      ctx.lineWidth   = incident ? 1.6 : 1;
       ctx.beginPath();
       ctx.moveTo(nodes[i].x, nodes[i].y);
       ctx.lineTo(nodes[j].x, nodes[j].y);
@@ -177,12 +195,15 @@ export function forceGraph({ side = 'right', top = 1820 } = {}) {
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
     for (const n of nodes) {
-      const isDrag  = n === dragging;
-      const isHover = n === hover;
-      const active  = isDrag || isHover;
-      ctx.fillStyle   = active ? 'rgba(47, 106, 160, 0.92)' : 'rgba(243, 239, 230, 1)';
-      ctx.strokeStyle = isDrag ? 'rgba(194, 83, 43, 0.95)'  : 'rgba(47, 106, 160, 0.85)';
-      ctx.lineWidth   = isDrag ? 2 : 1;
+      const isFocus    = n === focus;
+      const isNeighbor = focus && neighbors.has(n.id);
+      const active     = isFocus || isNeighbor;
+      ctx.fillStyle   = active
+        ? 'rgba(47, 106, 160, 0.92)'
+        : (focus ? 'rgba(243, 239, 230, 0.85)' : 'rgba(243, 239, 230, 1)');
+      ctx.strokeStyle = (n === dragging) ? 'rgba(194, 83, 43, 0.95)'
+                                         : 'rgba(47, 106, 160, 0.85)';
+      ctx.lineWidth   = (n === dragging) ? 2 : (isFocus ? 1.6 : 1);
       ctx.beginPath();
       ctx.arc(n.x, n.y, 11, 0, Math.PI * 2);
       ctx.fill();

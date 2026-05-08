@@ -27,6 +27,13 @@ export function life({ side = 'right', top = 60 } = {}) {
   let next = new Uint8Array(COLS * ROWS);
   let stepId = null;
   let dragging = false, dragValue = 1;
+  // History of the last 3 grid hashes — used to detect when the
+  // simulation has settled into a still life (period 1) or short
+  // oscillator (period 2 or 3) so we can re-seed instead of staring
+  // at a frozen blinker forever.
+  let history = [];
+  let stagnant = 0;
+  const STAGNANT_LIMIT = 28;   // ~3.4s at 120ms/step
 
   // ---- pixel state (set by relayout) ----
   let CELL = 10;
@@ -66,9 +73,22 @@ export function life({ side = 'right', top = 60 } = {}) {
     // ~22% density — busy enough to be interesting, sparse enough that
     // recognizable structures emerge instead of insta-dying.
     for (let i = 0; i < grid.length; i++) grid[i] = Math.random() < 0.22 ? 1 : 0;
+    history = [];
+    stagnant = 0;
     draw();
   }
-  function clear() { grid.fill(0); draw(); }
+  function clear() { grid.fill(0); history = []; stagnant = 0; draw(); }
+
+  // FNV-1a-ish hash over the grid bytes — fast, collision-free enough
+  // for the grids of interest (still lifes, blinkers, gliders).
+  function gridHash() {
+    let h = 0x811c9dc5;
+    for (let i = 0; i < grid.length; i++) {
+      h ^= grid[i];
+      h = (h * 0x01000193) >>> 0;
+    }
+    return h;
+  }
 
   function step() {
     for (let y = 0; y < ROWS; y++) {
@@ -86,6 +106,17 @@ export function life({ side = 'right', top = 60 } = {}) {
       }
     }
     [grid, next] = [next, grid];   // swap buffers — no allocation per step
+
+    // Cycle detection: if this generation matches any of the last 3,
+    // we've hit a still life (period 1) or a short oscillator (period
+    // 2 or 3). Hold the pattern briefly, then re-seed.
+    const h = gridHash();
+    if (history.includes(h)) stagnant++;
+    else                     stagnant = 0;
+    history.push(h);
+    if (history.length > 3) history.shift();
+    if (stagnant > STAGNANT_LIMIT) seed();
+
     draw();
   }
 

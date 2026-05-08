@@ -39,6 +39,16 @@ export function maze({ side = 'left', top = 720 } = {}) {
     ],
   });
 
+  // Stats live in their own element, above the canvas — putting them
+  // on-canvas at the bottom-right placed them right where the path
+  // ends and made them hard to read. Italic serif accent matches the
+  // on-canvas labels used in hashring / raft / sorting.
+  const statsEl = document.createElement('div');
+  statsEl.style.cssText =
+    "margin-bottom: 6px; font-family: 'Instrument Serif', serif; " +
+    "font-style: italic; font-size: 12.5px; color: rgba(47, 106, 160, 0.85);";
+  wrap.insertBefore(statsEl, canvas);
+
   function relayout() {
     const target = responsiveWidth({ min: MIN_W, max: MAX_W });
     CELL = Math.max(10, Math.floor(target / COLS));
@@ -187,6 +197,13 @@ export function maze({ side = 'left', top = 720 } = {}) {
         if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
       }
       ctx.stroke();
+    }
+
+    if (bfsState) {
+      const visited = bfsState.visited.size;
+      statsEl.textContent = bfsState.path
+        ? `visited ${visited} · path ${bfsState.path.length}`
+        : `visited ${visited}`;
     }
   }
 
