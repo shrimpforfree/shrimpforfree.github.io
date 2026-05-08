@@ -22,7 +22,7 @@ import { mount, place, onResize, visibility, reducedMotion, responsiveWidth }
 
 const MIN_W     = 320;
 const MAX_W     = 480;
-const N_POINTS  = 60;
+const N_POINTS  = 140;        // denser cloud — patterns read more clearly
 const MAX_DEPTH = 5;
 const HOLD_TICKS = 2;
 const TICK_MS   = 700;
@@ -34,6 +34,15 @@ export function decisionTree({ side = 'right', top = 1280 } = {}) {
   let depth = 1;
   let holdTicks = 0;
   let tickId = null;
+  // Cycle through dataset shapes — each one stresses an axis-aligned
+  // tree differently. Gaussians fit cleanly; XOR needs depth ≥ 2;
+  // circles & moons reveal the staircase artefacts trees produce
+  // when the true boundary is curved/diagonal.
+  let datasetIdx = 0;
+  const DATASETS = [
+    'gaussians', 'xor', 'circles', 'moons',
+    'spirals', 'checker', 'diagonal',
+  ];
 
   const canvas = document.createElement('canvas');
   const ctx    = canvas.getContext('2d');
@@ -60,6 +69,19 @@ export function decisionTree({ side = 'right', top = 1280 } = {}) {
   // ---- data ------------------------------------------------------
 
   function generateData() {
+    const name = DATASETS[datasetIdx];
+    const pts =
+      name === 'gaussians' ? genGaussians() :
+      name === 'xor'       ? genXor()       :
+      name === 'circles'   ? genCircles()   :
+      name === 'moons'     ? genMoons()     :
+      name === 'spirals'   ? genSpirals()   :
+      name === 'checker'   ? genCheckerboard() :
+                             genDiagonal();
+    return pts.filter(p => p.x >= 4 && p.x < W - 4 && p.y >= 4 && p.y < H - 4);
+  }
+
+  function genGaussians() {
     const pts = [];
     // Cluster centers closer + larger sigma ⇒ much more overlap, so
     // shallow trees can't classify cleanly and depth actually matters.
@@ -74,8 +96,146 @@ export function decisionTree({ side = 'right', top = 1280 } = {}) {
       const [dx, dy] = boxMuller(sigma);
       pts.push({ x: cx1 + dx, y: cy1 + dy, cls: 1 });
     }
-    // Clip to canvas so points don't render off-screen.
-    return pts.filter(p => p.x >= 4 && p.x < W - 4 && p.y >= 4 && p.y < H - 4);
+    return pts;
+  }
+
+  // XOR — class flips with each quadrant. A single axis-aligned split
+  // can't separate them; the tree needs depth ≥ 2 to reach 100%.
+  function genXor() {
+    const pts = [];
+    const cx = W / 2, cy = H / 2;
+    const margin = W * 0.08;
+    for (let i = 0; i < N_POINTS; i++) {
+      const x = margin + Math.random() * (W - 2 * margin);
+      const y = margin + Math.random() * (H - 2 * margin);
+      const cls = ((x < cx) === (y < cy)) ? 0 : 1;
+      // Push points away from the axes so the boundary is unambiguous.
+      const px = (x < cx) ? x - W * 0.04 : x + W * 0.04;
+      const py = (y < cy) ? y - W * 0.04 : y + W * 0.04;
+      pts.push({ x: px, y: py, cls });
+    }
+    return pts;
+  }
+
+  // Concentric — inner blob, outer ring. The boundary is a circle, so
+  // axis-aligned splits build a staircase approximation that needs
+  // many splits to look round.
+  function genCircles() {
+    const pts = [];
+    const cx = W / 2, cy = H / 2;
+    const r1 = W * 0.13;       // inner-cluster radius
+    const r2 = W * 0.34;       // outer-ring radius
+    const sigma = W * 0.025;
+    for (let i = 0; i < N_POINTS / 2; i++) {
+      const a = Math.random() * Math.PI * 2;
+      const r = Math.sqrt(Math.random()) * r1;
+      pts.push({ x: cx + r * Math.cos(a), y: cy + r * Math.sin(a), cls: 0 });
+    }
+    for (let i = 0; i < N_POINTS / 2; i++) {
+      const a = Math.random() * Math.PI * 2;
+      const [dx, dy] = boxMuller(sigma);
+      pts.push({
+        x: cx + r2 * Math.cos(a) + dx,
+        y: cy + r2 * Math.sin(a) + dy,
+        cls: 1,
+      });
+    }
+    return pts;
+  }
+
+  // Two interleaved crescents — the classic non-linear classification
+  // toy. Tree carves them apart with diagonal-staircase boundaries.
+  function genMoons() {
+    const pts = [];
+    const cx = W / 2, cy = H * 0.52;
+    const R = W * 0.26;
+    const sigma = W * 0.025;
+    for (let i = 0; i < N_POINTS / 2; i++) {
+      const t = Math.random() * Math.PI;
+      const [dx, dy] = boxMuller(sigma);
+      pts.push({
+        x: cx - R * 0.5 + R * Math.cos(t) + dx,
+        y: cy - R * Math.sin(t) + dy,
+        cls: 0,
+      });
+    }
+    for (let i = 0; i < N_POINTS / 2; i++) {
+      const t = Math.random() * Math.PI;
+      const [dx, dy] = boxMuller(sigma);
+      pts.push({
+        x: cx + R * 0.5 + R * Math.cos(t + Math.PI) + dx,
+        y: cy + R * Math.sin(t) + dy,
+        cls: 1,
+      });
+    }
+    return pts;
+  }
+
+  // Two interleaved Archimedean spirals. The class boundary winds
+  // around itself, so even at depth 5 you see a long staircase
+  // ribbon trying to follow each curve.
+  function genSpirals() {
+    const pts = [];
+    const cx = W / 2, cy = H / 2;
+    const Rmax = W * 0.36;
+    const turns = 1.6;
+    const sigma = W * 0.018;
+    const half = Math.floor(N_POINTS / 2);
+    for (let i = 0; i < half; i++) {
+      const u = i / half;
+      const t = u * Math.PI * 2 * turns;
+      const r = u * Rmax;
+      const [dx, dy] = boxMuller(sigma);
+      pts.push({ x: cx + r * Math.cos(t) + dx,
+                 y: cy + r * Math.sin(t) + dy, cls: 0 });
+    }
+    for (let i = 0; i < half; i++) {
+      const u = i / half;
+      const t = u * Math.PI * 2 * turns + Math.PI;
+      const r = u * Rmax;
+      const [dx, dy] = boxMuller(sigma);
+      pts.push({ x: cx + r * Math.cos(t) + dx,
+                 y: cy + r * Math.sin(t) + dy, cls: 1 });
+    }
+    return pts;
+  }
+
+  // 4×4 checkerboard — generalised XOR. Tree needs depth ≥ 4 to
+  // separate every cell; lower depths produce stripes that get
+  // progressively finer.
+  function genCheckerboard() {
+    const pts = [];
+    const margin = W * 0.06;
+    const inner = W - 2 * margin;
+    const cellW = inner / 4;
+    for (let i = 0; i < N_POINTS; i++) {
+      const x = margin + Math.random() * inner;
+      const y = margin + Math.random() * inner;
+      const ci = Math.floor((x - margin) / cellW);
+      const ri = Math.floor((y - margin) / cellW);
+      pts.push({ x, y, cls: (ci + ri) & 1 });
+    }
+    return pts;
+  }
+
+  // Diagonal — class is determined by which side of y = x the point
+  // sits on. The boundary is a single line, but axis-aligned splits
+  // can only approximate it as a staircase — depth 5 produces a
+  // jagged five-step approximation.
+  function genDiagonal() {
+    const pts = [];
+    const margin = W * 0.06;
+    const span = W - 2 * margin;
+    const halfBand = W * 0.04;     // exclusion zone around y=x
+    let safety = 0;
+    while (pts.length < N_POINTS && safety++ < N_POINTS * 4) {
+      const x = margin + Math.random() * span;
+      const y = margin + Math.random() * span;
+      const signed = (y - margin) - (x - margin);
+      if (Math.abs(signed) < halfBand) continue;
+      pts.push({ x, y, cls: signed > 0 ? 1 : 0 });
+    }
+    return pts;
   }
 
   function boxMuller(s) {
@@ -166,6 +326,10 @@ export function decisionTree({ side = 'right', top = 1280 } = {}) {
     } else {
       depth = 1;
       holdTicks = 0;
+      // Advance to the next dataset shape every full depth cycle so
+      // the widget showcases the tree's strengths and weaknesses
+      // across distinct geometries.
+      datasetIdx = (datasetIdx + 1) % DATASETS.length;
       points = generateData();
     }
     tree = build(points, { x1: 0, y1: 0, x2: W, y2: H }, 0, depth);
@@ -223,7 +387,8 @@ export function decisionTree({ side = 'right', top = 1280 } = {}) {
 
     // Depth + training accuracy, top-left. Accuracy climbing toward
     // 100% as depth grows is exactly the "...and now it overfits"
-    // story — at max depth the tree memorizes individual points.
+    // story — at max depth the tree memorizes individual points. The
+    // dataset name shows which shape the tree is currently fitting.
     let correct = 0;
     for (const p of points) if (predict(tree, p) === p.cls) correct++;
     const acc = points.length ? Math.round((correct / points.length) * 100) : 0;
@@ -231,7 +396,7 @@ export function decisionTree({ side = 'right', top = 1280 } = {}) {
     ctx.font = "italic 14px 'Instrument Serif', serif";
     ctx.textAlign = 'left';
     ctx.textBaseline = 'top';
-    ctx.fillText(`depth ${depth} · acc ${acc}%`, 10, 8);
+    ctx.fillText(`${DATASETS[datasetIdx]} · depth ${depth} · acc ${acc}%`, 10, 8);
   }
 
   function predict(node, p) {
