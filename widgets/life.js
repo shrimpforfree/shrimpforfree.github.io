@@ -17,7 +17,10 @@ import { mount, place, onResize, visibility, reducedMotion, responsiveWidth }
 
 const COLS = 40;        // wide
 const ROWS = 22;        // shorter — landscape
-const MIN_W = 400;      // smallest rendered width
+const MIN_W = 320;      // smallest rendered width — matches the
+                        // narrow-min widgets so life doesn't get hidden
+                        // earlier than its neighbours on shrinking
+                        // viewports.
 const MAX_W = 600;      // largest rendered width
 
 export function life({ side = 'right', top = 60 } = {}) {
