@@ -25,6 +25,12 @@ export function life({ side = 'right', top = 60 } = {}) {
   const idx = (x, y) => y * COLS + x;
   let grid = new Uint8Array(COLS * ROWS);
   let next = new Uint8Array(COLS * ROWS);
+  // age[i] = generations cell i has been alive (0 if dead, capped at
+  // 255). Drives the colour gradient — newborns flash rust for one
+  // frame, established cells settle into steel blue, ancient stable
+  // cells slowly fade out so still lifes look fossilised while
+  // oscillators shimmer.
+  let age  = new Uint8Array(COLS * ROWS);
   let stepId = null;
   let dragging = false, dragValue = 1;
   // History of the last 3 grid hashes — used to detect when the
@@ -72,12 +78,18 @@ export function life({ side = 'right', top = 60 } = {}) {
   function seed() {
     // ~22% density — busy enough to be interesting, sparse enough that
     // recognizable structures emerge instead of insta-dying.
-    for (let i = 0; i < grid.length; i++) grid[i] = Math.random() < 0.22 ? 1 : 0;
+    for (let i = 0; i < grid.length; i++) {
+      const alive = Math.random() < 0.22 ? 1 : 0;
+      grid[i] = alive;
+      age[i]  = alive ? 1 : 0;
+    }
     history = [];
     stagnant = 0;
     draw();
   }
-  function clear() { grid.fill(0); history = []; stagnant = 0; draw(); }
+  function clear() {
+    grid.fill(0); age.fill(0); history = []; stagnant = 0; draw();
+  }
 
   // FNV-1a-ish hash over the grid bytes — fast, collision-free enough
   // for the grids of interest (still lifes, blinkers, gliders).
@@ -105,6 +117,12 @@ export function life({ side = 'right', top = 60 } = {}) {
         next[idx(x, y)] = (a && (n === 2 || n === 3)) || (!a && n === 3) ? 1 : 0;
       }
     }
+    // Update ages from the grid → next transition. Newborns reset to
+    // 1 (rust flash); persisters increment; deaths reset to 0.
+    for (let i = 0; i < grid.length; i++) {
+      if (next[i]) age[i] = grid[i] ? Math.min(255, age[i] + 1) : 1;
+      else         age[i] = 0;
+    }
     [grid, next] = [next, grid];   // swap buffers — no allocation per step
 
     // Cycle detection: if this generation matches any of the last 3,
@@ -120,11 +138,25 @@ export function life({ side = 'right', top = 60 } = {}) {
     draw();
   }
 
+  // Color a cell by its age:
+  //   1   → rust flash (just born)
+  //   2..  → steel blue, slowly fading alpha so ancient still-lifes
+  //          look fossilised and movement stays the visually loudest
+  //          thing on the grid.
+  function ageColor(a) {
+    if (a === 1) return 'rgba(194, 83, 43, 0.95)';
+    const t = Math.min(1, (a - 2) / 30);
+    const alpha = 0.85 - 0.30 * t;
+    return `rgba(47, 106, 160, ${alpha})`;
+  }
+
   function draw() {
     ctx.clearRect(0, 0, W, H);
-    ctx.fillStyle = 'rgba(47, 106, 160, 0.80)';
     for (let y = 0; y < ROWS; y++) for (let x = 0; x < COLS; x++) {
-      if (grid[idx(x, y)]) ctx.fillRect(x * CELL + 1, y * CELL + 1, CELL - 2, CELL - 2);
+      const i = idx(x, y);
+      if (!grid[i]) continue;
+      ctx.fillStyle = ageColor(age[i]);
+      ctx.fillRect(x * CELL + 1, y * CELL + 1, CELL - 2, CELL - 2);
     }
   }
 
@@ -138,18 +170,23 @@ export function life({ side = 'right', top = 60 } = {}) {
     return { x, y };
   }
 
+  function paint(c) {
+    const i = idx(c.x, c.y);
+    grid[i] = dragValue;
+    age[i]  = dragValue ? 1 : 0;
+  }
+
   canvas.addEventListener('mousedown', (e) => {
     e.preventDefault();
     const c = cellAt(e); if (!c) return;
     dragging = true;
     dragValue = grid[idx(c.x, c.y)] ? 0 : 1;
-    grid[idx(c.x, c.y)] = dragValue;
-    draw();
+    paint(c); draw();
   });
   window.addEventListener('mousemove', (e) => {
     if (!dragging) return;
     const c = cellAt(e); if (!c) return;
-    grid[idx(c.x, c.y)] = dragValue; draw();
+    paint(c); draw();
   });
   window.addEventListener('mouseup', () => { dragging = false; });
   canvas.addEventListener('touchstart', (e) => {
@@ -157,13 +194,13 @@ export function life({ side = 'right', top = 60 } = {}) {
     const c = cellAt(e); if (!c) return;
     dragging = true;
     dragValue = grid[idx(c.x, c.y)] ? 0 : 1;
-    grid[idx(c.x, c.y)] = dragValue; draw();
+    paint(c); draw();
   }, { passive: false });
   canvas.addEventListener('touchmove', (e) => {
     e.preventDefault();
     if (!dragging) return;
     const c = cellAt(e); if (!c) return;
-    grid[idx(c.x, c.y)] = dragValue; draw();
+    paint(c); draw();
   }, { passive: false });
   canvas.addEventListener('touchend', () => { dragging = false; });
 

@@ -90,13 +90,46 @@ export function sorting({ side = 'left', top = 60 } = {}) {
   function draw() {
     ctx.clearRect(0, 0, W, H);
     const w = W / arr.length;
-    for (let i = 0; i < arr.length; i++) {
-      const h = (arr[i] / arr.length) * (H - 8);
-      ctx.fillStyle = active.includes(i)
-        ? 'rgba(47, 106, 160, 0.90)'
-        : 'rgba(28, 31, 36, 0.55)';
+    const n = arr.length;
+    // Find the longest already-sorted suffix — true once each value
+    // is in its final position relative to everything after it. Works
+    // for any algorithm because it's a property of the array, not the
+    // algorithm; for bubble/heap it grows from the right, for the
+    // others it pops in chunks. Bars in this region get a paper halo
+    // so the reader can see "this side is done" at a glance.
+    let sortedFrom = n;
+    let runMin = Infinity;
+    for (let i = n - 1; i > 0; i--) {
+      if (arr[i - 1] <= arr[i] && arr[i - 1] < runMin) {
+        runMin = arr[i - 1];
+        sortedFrom = i - 1;
+      } else break;
+    }
+    if (sortedFrom < n - 1) sortedFrom = Math.min(sortedFrom, n - 1);
+
+    for (let i = 0; i < n; i++) {
+      const h = (arr[i] / n) * (H - 8);
+      const v = arr[i] / n;                          // 0..1
+      const isActive = active.includes(i);
+      const isSorted = i >= sortedFrom;
+      // Bars are painted on a value gradient (cool/light → cool/deep).
+      // Active bars get a rust accent so the algorithm's "fingertip"
+      // pops; sorted bars keep the gradient but with extra alpha so
+      // the settled region reads as solid.
+      let fill;
+      if (isActive) {
+        fill = 'rgba(194, 83, 43, 0.95)';
+      } else {
+        const r = lerp(120, 28,  v);
+        const g = lerp(170, 60,  v);
+        const b = lerp(200, 110, v);
+        const alpha = isSorted ? 0.92 : 0.55;
+        fill = `rgba(${r|0},${g|0},${b|0},${alpha})`;
+      }
+      ctx.fillStyle = fill;
       ctx.fillRect(i * w + 0.5, H - h, w - 1, h);
     }
+
     // Live stats — top-left, italic serif to match the rest of the page.
     ctx.fillStyle = 'rgba(47, 106, 160, 0.85)';
     ctx.font = "italic 13px 'Instrument Serif', serif";
@@ -104,6 +137,8 @@ export function sorting({ side = 'left', top = 60 } = {}) {
     ctx.textBaseline = 'top';
     ctx.fillText(`cmp ${stats.cmp} · swap ${stats.swap}`, 10, 8);
   }
+
+  function lerp(a, b, t) { return a + (b - a) * t; }
 
   function start() {
     if (paused) return;
