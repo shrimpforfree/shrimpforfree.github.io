@@ -41,8 +41,11 @@ export function quadtree({ side = 'left', top = 1340 } = {}) {
   let points = [];
   let rafId = null;
   // Query state: x/y track mouse when hovering, otherwise orbit. r is
-  // a fraction of canvas width so it scales with the gutter.
-  const query = { x: MIN_W / 2, y: MIN_W / 2, r: MIN_W * 0.13, cursor: false };
+  // a fraction of canvas width × queryScale so it scales with the
+  // gutter AND the user's [ + ]/[ - ] adjustments.
+  const query = { x: MIN_W / 2, y: MIN_W / 2, r: 0, cursor: false };
+  let queryScale = 1.0;
+  const SCALE_MIN = 0.4, SCALE_MAX = 2.5, SCALE_STEP = 0.25;
   let orbitT = 0;
 
   const canvas = document.createElement('canvas');
@@ -51,7 +54,16 @@ export function quadtree({ side = 'left', top = 1340 } = {}) {
   const { wrap } = mount({
     content: canvas,
     label: '// quadtree · range query',
+    controls: [
+      { id: 'minus', text: '[ - ]', onClick: () => bumpScale(-SCALE_STEP) },
+      { id: 'plus',  text: '[ + ]', onClick: () => bumpScale(+SCALE_STEP) },
+    ],
   });
+
+  function bumpScale(delta) {
+    queryScale = Math.max(SCALE_MIN, Math.min(SCALE_MAX, queryScale + delta));
+    query.r = W * 0.13 * queryScale;
+  }
 
   function relayout() {
     W = H = responsiveWidth({ min: MIN_W, max: MAX_W });
@@ -62,7 +74,7 @@ export function quadtree({ side = 'left', top = 1340 } = {}) {
     canvas.style.width  = W + 'px';
     canvas.style.height = H + 'px';
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-    query.r = W * 0.13;
+    query.r = W * 0.13 * queryScale;
   }
 
   function init() {
