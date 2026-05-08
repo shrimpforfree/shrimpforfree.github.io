@@ -20,11 +20,18 @@ const MAX_W = 480;
 const TICK_MS = 35;
 const STEPS_PER_TICK = 2;
 
+// Solver picker — each is a (state, neighbors) → step function. Pull
+// strategy differs (FIFO / LIFO / min-f) and shapes the visited
+// region: BFS spreads as a wave, DFS sends thin tendrils, A* heads
+// straight at the goal.
+const SOLVERS = ['bfs', 'dfs', 'a*'];
+
 export function maze({ side = 'left', top = 720 } = {}) {
   let CELL = 14;
   let W = COLS * CELL, H = ROWS * CELL;
   let cells = [];
   let bfsState = null;
+  let algo = 'bfs';
   let pauseFrames = 0;
   let tickId = null;
 
@@ -33,7 +40,12 @@ export function maze({ side = 'left', top = 720 } = {}) {
 
   const { wrap } = mount({
     content: canvas,
-    label: '// maze · bfs solver',
+    select: {
+      options: SOLVERS.map(v => ({ value: v, label: v })),
+      value: 'bfs',
+      onChange: (v) => { algo = v; regenerate(); },
+    },
+    label: '// maze · pick a solver',
     controls: [
       { id: 'regen', text: '[ regenerate ]', onClick: regenerate },
     ],
@@ -92,17 +104,19 @@ export function maze({ side = 'left', top = 720 } = {}) {
     }
   }
 
-  // ---- BFS solver state ----
+  // ---- solver state -----------------------------------------------
+  // The struct is shared across all algorithms; only the pull strategy
+  // (and what we put in `open`) varies. `dist` holds the cost from
+  // start (BFS depth / DFS depth / A*'s g) and drives the gradient.
   const key = ({ x, y }) => y * COLS + x;
+  const manhattan = (a, b) => Math.abs(a.x - b.x) + Math.abs(a.y - b.y);
 
-  function startBFS() {
+  function startSolver() {
     const start = { x: 0, y: 0 };
     const end   = { x: COLS - 1, y: ROWS - 1 };
-    // dist holds the BFS depth of every reached cell. We render the
-    // maze as a gradient over these distances so the frontier looks
-    // like a propagating wave instead of a flat tint.
+    const startNode = { x: 0, y: 0, g: 0, f: manhattan({ x: 0, y: 0 }, end) };
     bfsState = {
-      queue:   [start],
+      open:    [startNode],
       dist:    new Map([[key(start), 0]]),
       maxDist: 0,
       parent:  new Map(),
@@ -122,6 +136,21 @@ export function maze({ side = 'left', top = 720 } = {}) {
     return out;
   }
 
+  // Pull the next cell to expand, depending on algorithm:
+  //   bfs → FIFO (head)         · uniform wavefront
+  //   dfs → LIFO (tail)         · long tendrils, often non-optimal path
+  //   a*  → lowest f = g + h    · elongated toward the goal
+  function pullNext() {
+    const open = bfsState.open;
+    if (!open.length) return null;
+    if (algo === 'bfs')   return open.shift();
+    if (algo === 'dfs')   return open.pop();
+    // A*: linear scan is fine for ≤384 cells.
+    let mi = 0;
+    for (let i = 1; i < open.length; i++) if (open[i].f < open[mi].f) mi = i;
+    return open.splice(mi, 1)[0];
+  }
+
   function tick() {
     if (!bfsState) return;
     if (bfsState.done) {
@@ -131,10 +160,10 @@ export function maze({ side = 'left', top = 720 } = {}) {
       return;
     }
     for (let i = 0; i < STEPS_PER_TICK; i++) {
-      if (!bfsState.queue.length) { bfsState.done = true; break; }
-      const cell = bfsState.queue.shift();
+      const cell = pullNext();
+      if (!cell) { bfsState.done = true; break; }
       if (cell.x === bfsState.end.x && cell.y === bfsState.end.y) {
-        // Reconstruct shortest path back to start.
+        // Reconstruct path back to start.
         const path = [];
         let cur = cell;
         while (cur) { path.unshift(cur); cur = bfsState.parent.get(key(cur)); }
@@ -142,14 +171,18 @@ export function maze({ side = 'left', top = 720 } = {}) {
         bfsState.done = true;
         break;
       }
-      const d = bfsState.dist.get(key(cell));
+      const g = bfsState.dist.get(key(cell));
       for (const n of neighbors(cell)) {
         const nk = key(n);
         if (!bfsState.dist.has(nk)) {
-          bfsState.dist.set(nk, d + 1);
-          if (d + 1 > bfsState.maxDist) bfsState.maxDist = d + 1;
+          bfsState.dist.set(nk, g + 1);
+          if (g + 1 > bfsState.maxDist) bfsState.maxDist = g + 1;
           bfsState.parent.set(nk, cell);
-          bfsState.queue.push(n);
+          bfsState.open.push({
+            x: n.x, y: n.y,
+            g: g + 1,
+            f: (g + 1) + manhattan(n, bfsState.end),
+          });
         }
       }
     }
@@ -158,7 +191,7 @@ export function maze({ side = 'left', top = 720 } = {}) {
 
   function regenerate() {
     generate();
-    startBFS();
+    startSolver();
     pauseFrames = 0;
     draw();
   }
@@ -256,7 +289,7 @@ export function maze({ side = 'left', top = 720 } = {}) {
   // Order matters: relayout() calls draw(), and draw() reads `cells`,
   // so the maze must be generated before the first layout pass.
   generate();
-  startBFS();
+  startSolver();
   relayout();
   if (!reducedMotion()) start();
 }
