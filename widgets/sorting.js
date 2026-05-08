@@ -33,6 +33,9 @@ export function sorting({ side = 'left', top = 60 } = {}) {
   let tickId = null;
   let algo = 'bubble';
   let paused = false;
+  // Mutated by each algorithm as it runs — surfaces the cost gap
+  // between O(n²) and O(n log n) without any explanation.
+  let stats = { cmp: 0, swap: 0 };
 
   const canvas = document.createElement('canvas');
   const ctx    = canvas.getContext('2d');
@@ -65,7 +68,8 @@ export function sorting({ side = 'left', top = 60 } = {}) {
   }
 
   function restart() {
-    gen = ALGOS[algo](arr);
+    stats = { cmp: 0, swap: 0 };
+    gen = ALGOS[algo](arr, stats);
     active = [];
     draw();
   }
@@ -93,6 +97,12 @@ export function sorting({ side = 'left', top = 60 } = {}) {
         : 'rgba(28, 31, 36, 0.55)';
       ctx.fillRect(i * w + 0.5, H - h, w - 1, h);
     }
+    // Live stats — top-left, italic serif to match the rest of the page.
+    ctx.fillStyle = 'rgba(47, 106, 160, 0.85)';
+    ctx.font = "italic 13px 'Instrument Serif', serif";
+    ctx.textAlign = 'left';
+    ctx.textBaseline = 'top';
+    ctx.fillText(`cmp ${stats.cmp} · swap ${stats.swap}`, 10, 8);
   }
 
   function start() {
@@ -129,101 +139,119 @@ function shuffled(n) {
 }
 
 // ---- algorithms -------------------------------------------------
-// Each is a generator. It mutates `a` in place and yields, after
-// every meaningful operation, the indices currently being touched
-// (so the renderer can highlight them).
+// Each is a generator that mutates `a` in place, increments `s.cmp`
+// and `s.swap` as it goes (so the widget can show a live cost
+// counter), and yields the indices currently being touched (so the
+// renderer can highlight them).
 
-function* bubbleSort(a) {
+function* bubbleSort(a, s) {
   for (let i = 0; i < a.length; i++) {
     for (let j = 0; j < a.length - i - 1; j++) {
+      s.cmp++;
       yield [j, j + 1];
       if (a[j] > a[j + 1]) {
         [a[j], a[j + 1]] = [a[j + 1], a[j]];
+        s.swap++;
         yield [j, j + 1];
       }
     }
   }
 }
 
-function* insertionSort(a) {
+function* insertionSort(a, s) {
   for (let i = 1; i < a.length; i++) {
     let j = i;
-    while (j > 0 && a[j - 1] > a[j]) {
+    while (j > 0) {
+      s.cmp++;
+      if (a[j - 1] <= a[j]) break;
       yield [j - 1, j];
       [a[j - 1], a[j]] = [a[j], a[j - 1]];
+      s.swap++;
       j--;
     }
   }
 }
 
-function* selectionSort(a) {
+function* selectionSort(a, s) {
   for (let i = 0; i < a.length - 1; i++) {
     let m = i;
     for (let j = i + 1; j < a.length; j++) {
+      s.cmp++;
       yield [m, j];
       if (a[j] < a[m]) m = j;
     }
     if (m !== i) {
       [a[i], a[m]] = [a[m], a[i]];
+      s.swap++;
       yield [i, m];
     }
   }
 }
 
-function* mergeSort(a, lo = 0, hi = a.length) {
+function* mergeSort(a, s, lo = 0, hi = a.length) {
   if (hi - lo <= 1) return;
   const mid = (lo + hi) >> 1;
-  yield* mergeSort(a, lo, mid);
-  yield* mergeSort(a, mid, hi);
+  yield* mergeSort(a, s, lo, mid);
+  yield* mergeSort(a, s, mid, hi);
   // Merge a[lo..mid) with a[mid..hi) using a small aux buffer.
+  // Each placement counts as a "swap" — it's a write into the array.
   const aux = a.slice(lo, hi);
   let i = 0, j = mid - lo;
   for (let k = lo; k < hi; k++) {
     yield [k];
-    if      (i >= mid - lo)       a[k] = aux[j++];
-    else if (j >= hi - lo)        a[k] = aux[i++];
-    else if (aux[j] < aux[i])     a[k] = aux[j++];
-    else                          a[k] = aux[i++];
+    if      (i >= mid - lo)        { a[k] = aux[j++]; s.swap++; }
+    else if (j >= hi - lo)         { a[k] = aux[i++]; s.swap++; }
+    else {
+      s.cmp++;
+      if (aux[j] < aux[i])         { a[k] = aux[j++]; s.swap++; }
+      else                         { a[k] = aux[i++]; s.swap++; }
+    }
   }
 }
 
-function* quickSort(a, lo = 0, hi = a.length - 1) {
+function* quickSort(a, s, lo = 0, hi = a.length - 1) {
   if (lo >= hi) return;
   // Lomuto partition: pivot is the last element.
   const pivot = a[hi];
   let i = lo;
   for (let j = lo; j < hi; j++) {
+    s.cmp++;
     yield [j, hi];
     if (a[j] < pivot) {
       [a[i], a[j]] = [a[j], a[i]];
+      s.swap++;
       yield [i, j];
       i++;
     }
   }
   [a[i], a[hi]] = [a[hi], a[i]];
+  s.swap++;
   yield [i, hi];
-  yield* quickSort(a, lo, i - 1);
-  yield* quickSort(a, i + 1, hi);
+  yield* quickSort(a, s, lo, i - 1);
+  yield* quickSort(a, s, i + 1, hi);
 }
 
-function* heapSort(a) {
+function* heapSort(a, s) {
   const n = a.length;
   function* siftDown(start, end) {
     let r = start;
     while (r * 2 + 1 <= end) {
       let c = r * 2 + 1;
-      if (c + 1 <= end && a[c] < a[c + 1]) c++;
+      if (c + 1 <= end) { s.cmp++; if (a[c] < a[c + 1]) c++; }
+      s.cmp++;
       yield [r, c];
       if (a[r] < a[c]) {
         [a[r], a[c]] = [a[c], a[r]];
+        s.swap++;
         r = c;
       } else return;
     }
   }
   // Build the max-heap, then repeatedly extract the root.
-  for (let s = (n - 2) >> 1; s >= 0; s--) yield* siftDown(s, n - 1);
+  for (let s2 = (n - 2) >> 1; s2 >= 0; s2--) yield* siftDown(s2, n - 1);
   for (let e = n - 1; e > 0; e--) {
     [a[0], a[e]] = [a[e], a[0]];
+    s.swap++;
     yield [0, e];
     yield* siftDown(0, e - 1);
   }

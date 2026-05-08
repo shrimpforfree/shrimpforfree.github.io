@@ -537,6 +537,9 @@
   import { fibonacci }    from './widgets/fibonacci.js';
   import { quadtree }     from './widgets/quadtree.js';
   import { decisionTree } from './widgets/decision-tree.js';
+  import { hashring }     from './widgets/hashring.js';
+  import { forceGraph }   from './widgets/force-graph.js';
+  import { raft }         from './widgets/raft.js';
 
   // === widgets ===========================================
   // top = pixels from page top — staggered so the gutters
@@ -548,6 +551,9 @@
   fibonacci   ({ side: 'right', top: 740  });   // bio → work
   decisionTree({ side: 'right', top: 1280 });   // mid-work
   quadtree    ({ side: 'left',  top: 1340 });   // mid-work
+  forceGraph  ({ side: 'right', top: 1820 });   // bottom — interactive
+  hashring    ({ side: 'left',  top: 1900 });   // bottom
+  raft        ({ side: 'right', top: 2400 });   // bottom — backend signature
   // =======================================================
 </script>
 
