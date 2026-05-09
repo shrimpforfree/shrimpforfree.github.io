@@ -479,13 +479,18 @@
 
             footer {
                 display: flex;
-                justify-content: space-between;
-                align-items: center;
+                flex-direction: column;
+                gap: 14px;
                 font-size: 11px;
                 color: var(--muted);
                 padding: 32px 0 0;
                 border-top: 1px solid var(--hairline);
                 letter-spacing: 0.04em;
+            }
+            footer .footer-row {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
                 flex-wrap: wrap;
                 gap: 12px;
             }
@@ -495,6 +500,16 @@
             }
             footer a {
                 border-bottom-color: rgba(28, 31, 36, 0.22);
+            }
+            /* Plain contact strip — read-only text, deliberately not
+               linked so it sits in its own row above the social
+               links instead of competing with them. */
+            footer .contact {
+                display: flex;
+                gap: 18px;
+                color: var(--muted);
+                opacity: 0.85;
+                font-family: "JetBrains Mono", monospace;
             }
 
             /* Floating signature in bottom-right (hidden on mobile). */
@@ -824,23 +839,33 @@
             </section>
 
             <footer class="reveal d6">
-                <div class="links">
-                    <a href="mailto:brian@hopscotchlabs.biz">email</a>
-                    <a
-                        href="https://github.com/shrimpforfree"
-                        target="_blank"
-                        rel="noopener"
-                        >github</a
-                    >
-                    <a
-                        href="https://www.linkedin.com/in/brian-chen-07661a267/"
-                        target="_blank"
-                        rel="noopener"
-                        >linkedin</a
-                    >
-                    <a href="resume.pdf" download>resume</a>
+                <div class="contact">
+                    <span>brian920922@gmail.com</span>
+                    <span>917·853·9009</span>
                 </div>
-                <div>let's build something together</div>
+                <div class="footer-row">
+                    <div class="links">
+                        <a
+                            href="https://github.com/shrimpforfree"
+                            target="_blank"
+                            rel="noopener"
+                            >github</a
+                        >
+                        <a
+                            href="https://www.linkedin.com/in/brian-chen-07661a267/"
+                            target="_blank"
+                            rel="noopener"
+                            >linkedin</a
+                        >
+                        <a
+                            href="https://www.instagram.com/br_ian0922/"
+                            target="_blank"
+                            rel="noopener"
+                            >instagram</a
+                        >
+                    </div>
+                    <div>let's build something together</div>
+                </div>
             </footer>
         </main>
 
