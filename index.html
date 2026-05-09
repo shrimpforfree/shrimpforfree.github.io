@@ -408,6 +408,19 @@
             .entry-title a:hover {
                 color: var(--accent);
             }
+            /* External-link indicator — any entry whose href is a real
+               URL (not the placeholder #) gets a small "↗" beside its
+               title. The existing right-side arrow stays the same so
+               the page rhythm doesn't change; this just signals "yes,
+               this one actually opens something." */
+            .entry[href^="http"] .entry-title::after {
+                content: " ↗";
+                font-size: 0.65em;
+                color: var(--muted);
+                vertical-align: 0.15em;
+                margin-left: 0.18em;
+                letter-spacing: 0;
+            }
 
             .entry-detail {
                 font-size: 12px;
@@ -668,7 +681,7 @@
             <section class="reveal d5">
                 <h2><span>Side projects</span><span class="num">ii.</span></h2>
 
-                <a class="entry" href="#" target="_blank" rel="noopener">
+                <a class="entry" href="https://frondend-production-1ff9.up.railway.app/" target="_blank" rel="noopener">
                     <div class="entry-year">scala</div>
                     <div>
                         <div class="entry-title">Chess engine</div>
