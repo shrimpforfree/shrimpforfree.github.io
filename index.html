@@ -199,6 +199,35 @@
                 }
             }
 
+            /* Format-hint pill — only appears when the viewport is too
+               narrow to host the gutter widgets. Tells the reader the
+               quickest fix (zoom out / smaller font) without nagging
+               anyone on a normal-sized screen. */
+            .format-hint {
+                display: none;
+                position: fixed;
+                bottom: 14px;
+                left: 50%;
+                transform: translateX(-50%);
+                z-index: 50;
+                font-family: "Instrument Serif", serif;
+                font-style: italic;
+                font-size: 12.5px;
+                color: var(--muted);
+                background: var(--bg);
+                border: 1px solid var(--hairline);
+                padding: 6px 12px;
+                border-radius: 14px;
+                white-space: nowrap;
+                pointer-events: none;
+                opacity: 0.9;
+            }
+            @media (max-width: 1100px) {
+                .format-hint {
+                    display: block;
+                }
+            }
+
             /* ----------------------------------------------------------------
      Main column. Narrow on purpose — readable line length.
      z-index above the noise/canvas layers so text is always crisp.
@@ -206,7 +235,13 @@
             main {
                 position: relative;
                 z-index: 10;
-                max-width: 720px;
+                /* On wide screens we want 720px for readable line-
+                   length; on medium ones we shrink so the gutters
+                   keep ≥ 370 px each (320-px widget min + 50 px of
+                   place() padding). Lower bound is 360 px — narrow
+                   but readable — chosen so widgets stay visible all
+                   the way down to the @media(1100) cutoff. */
+                max-width: clamp(360px, calc(100vw - 740px), 720px);
                 margin: 0 auto;
                 padding: 14vh 28px 8vh;
             }
@@ -797,6 +832,7 @@
         </main>
 
         <div class="sig">— b · 2026 ──</div>
+        <div class="format-hint">layout cramped? try a smaller browser font (cmd/ctrl + −)</div>
 
         <script>
             /* ============================================================

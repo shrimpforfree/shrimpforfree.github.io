@@ -27,7 +27,7 @@
 import { mount, place, onResize, visibility, reducedMotion, responsiveWidth }
   from './_helpers.js';
 
-const MIN_W      = 360;
+const MIN_W      = 320;
 const MAX_W      = 520;
 const MIN_PHYS   = 3;        // physical nodes (servers)
 const MAX_PHYS   = 6;

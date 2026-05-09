@@ -16,7 +16,7 @@
 import { mount, place, onResize, visibility, reducedMotion, responsiveWidth }
   from './_helpers.js';
 
-const MIN_W   = 360;
+const MIN_W   = 320;
 const MAX_W   = 520;
 const N_NODES = 14;        // initial size; mutator grows/shrinks within bounds
 const N_MIN   = 10;

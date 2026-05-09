@@ -8,11 +8,20 @@
 // Anything that's specific to a widget (Game of Life rules,
 // sorting algorithms, etc.) lives in that widget's own file.
 
-const MAIN_WIDTH = 720;     // matches main { max-width: 720px } in styles
+// Fallback when <main> isn't measurable yet — matches the upper
+// bound of the responsive clamp() in styles.
+const MAIN_WIDTH_MAX = 720;
 const GUTTER_PAD = 36;
 
+// Read the live <main> width every call so we react to the
+// responsive clamp() in CSS — main shrinks on narrower screens to
+// keep the gutters wide enough to hold widgets, and gutterWidth
+// must follow that, otherwise widgets get hidden one-by-one as the
+// viewport shrinks even when there's room.
 export function gutterWidth() {
-  return (window.innerWidth - MAIN_WIDTH) / 2;
+  const main = document.querySelector('main');
+  const mainW = main ? main.getBoundingClientRect().width : MAIN_WIDTH_MAX;
+  return (window.innerWidth - mainW) / 2;
 }
 
 // Pick a width that scales with the gutter, clamped to a widget's range.

@@ -39,7 +39,7 @@
 import { mount, place, onResize, visibility, reducedMotion, responsiveWidth }
   from './_helpers.js';
 
-const MIN_W   = 360;
+const MIN_W   = 320;
 const MAX_W   = 520;
 const N_NODES = 7;
 const MAJORITY = Math.floor(N_NODES / 2) + 1;   // votes needed to win an election
